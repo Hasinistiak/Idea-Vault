@@ -2,18 +2,21 @@
 
 export const theme = {
     colors: {
-      primary: "#007BFF", // Main brand color
-      secondary: "#6C757D", // Secondary brand color
-      success: "#28A745", // For success messages
-      danger: "#DC3545", // For error messages
-      warning: "#FFC107", // For warnings
-      info: "#17A2B8", // For informational messages
-      light: "#F8F9FA", // Light background
-      dark: "#1A1A1D", // Dark background
+      primary: "#007BFF", 
+      secondary: "#dfe2e3", 
+      success: "#28A745", 
+      danger: "#DC3545", 
+      warning: "#FFC107", 
+      info: "#17A2B8", 
+      light: "#E5E5E5", 
+      dark: "#1A1A1D", 
+      darker: '#131212',
       white: "#FFFFFF",
       black: "#000000",
       text: "#343A40",
-      Button: "#3c3c50"
+      Button: "#7d8bae",
+      Button2: "#5c774e",
+      card: "rgba(255,255,255, 0.1)"
     },
     fonts: {
       primary: "'Roboto', sans-serif", // Main font

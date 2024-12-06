@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
         height: hp(7.2),
         alignItems:'center',
         justifyContent: 'center',
-        backgroundColor: '#131212',
+        backgroundColor: theme.colors.dark,
         borderRadius: theme.radius.md,
         borderCurve: 'continuous',
         paddingHorizontal: 12,

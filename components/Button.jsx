@@ -23,7 +23,7 @@ const Button = ({
 
     if(loading){
         return(
-            <View style={[styles.button, buttonStyle, {backgroundColor: theme.colors.Button}]}>
+            <View style={[styles.button, buttonStyle, {backgroundColor: theme.colors.Button2}]}>
                 <Loading/>
             </View>
         )
@@ -40,7 +40,7 @@ export default Button
 const styles = StyleSheet.create({
 
     button:{
-        backgroundColor: theme.colors.Button,
+        backgroundColor: theme.colors.Button2,
         height: hp(6.6),
         justifyContent: 'center',
         alignItems: 'center',
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     },
     text:{
         fontSize: hp(2.5),
-        color: 'white',
+        color: theme.colors.darker,
         fontWeight: theme.fontWeights.bold
     }
 

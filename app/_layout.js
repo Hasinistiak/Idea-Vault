@@ -1,6 +1,6 @@
 import { View, Text } from 'react-native'
 import React, { useEffect } from 'react'
-import { Stack, useRouter } from 'expo-router'
+import { Slot, Stack, useRouter } from 'expo-router'
 import { AuthProvider, useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import { getUserData } from '../services/userservice'
@@ -46,13 +46,16 @@ const MainLayout = () => {
 
   return (
     <Stack
-        screenOptions={{
-            headerShown:false,
-            animation: 'fade_from_bottom',
-        }}
+      screenOptions={{
+        headerShown: false,
+        gestureEnabled: true,
+        animation: 'slide_from_right', // Apply animation for non-tab screens
+        gestureDirection: 'horizontal',
+      }}
     >
+      <Slot /> {/* This will load the current screen for the app */}
     </Stack>
-  )
-}
+  );
+};
 
 export default _layout

@@ -24,6 +24,11 @@ import Image from './Image';
 import Video from './Video';
 import Save from './Save';
 import Inbox from './Inbox';
+import { Add } from './Add';
+import Pause from './pause';
+import Idea from './idea';
+import Rocket from './rocket';
+import CheckBox from './checkbox';
 
 const icons = {
     home: Home,
@@ -49,6 +54,11 @@ const icons = {
     video: Video,
     save: Save,
     inbox: Inbox,
+    add : Add,
+    pause : Pause,
+    idea : Idea,
+    rocket : Rocket,
+    checkbox : CheckBox
 }
 
 const Icon = ({name, ...props}) => {

@@ -14,13 +14,12 @@ const welcome = () => {
     <ScreenWrapper bg={theme.colors.dark}>
       <StatusBar style='dark' />
       <View style={styles.container}>
-        {/* Image */}
-        
+
         {/* title */}
         <View style={{gap: 20}}>
-            <Text style={styles.title}>Social App</Text>
+            <Text style={styles.title}>Idea Vault</Text>
             <Text style={styles.subTitle}>
-                Reimagine the new world with Social App.
+            So you never lose your next million-dollar idea.
             </Text>
         </View>
 
@@ -36,7 +35,7 @@ const welcome = () => {
                 Already Have an Account?
             </Text>
             <Pressable onPress={()=> router.push('login')}>
-                <Text style={[styles.loginText, {color:theme.colors.success}]}>Login</Text>
+                <Text style={[styles.loginText, {color:theme.colors.Button2}]}>Login</Text>
             </Pressable>
         </View>
       </View>
@@ -52,9 +51,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'space-around',
+        justifyContent: 'center',
         backgroundColor: theme.colors.dark,
-        paddingHorizontal: wp(4),
+        paddingHorizontal: wp(3),
     },
 
     title: {
@@ -65,20 +64,15 @@ const styles = StyleSheet.create({
         font: theme.fonts.primary
     },
 
-    Image: {
-        height: hp(30),
-        width: wp(100),
-        alignSelf: "center"
-    },
-
     subTitle: {
         textAlign: 'center',
         paddingHorizontal: wp(10),
-        fontSize: hp(1.9),
+        fontSize: hp(1.8),
         color: theme.colors.secondary,
     },
 
     button: {
+        marginTop: hp(8),
         gap:30,
         width: '100%'
     },

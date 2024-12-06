@@ -43,7 +43,7 @@ const Login = () => {
     }
 
   return (
-    <ScreenWrapper bg={theme.colors.dark}>
+    <ScreenWrapper bg={theme.colors.darker}>
         <StatusBar style='dark'/>
         <View style={styles.container}>
             <BackButton router={router}/>
@@ -85,7 +85,7 @@ const Login = () => {
                         Don't Have an Account?
                     </Text>
                     <Pressable onPress={()=> router.push('signup')}>
-                        <Text style={[styles.signupText, {color: theme.colors.success, fontWeight: theme.fontWeights.bold}]}>Sign Up</Text>
+                        <Text style={[styles.signupText, {color: theme.colors.Button2, fontWeight: theme.fontWeights.bold}]}>Sign Up</Text>
                     </Pressable>
                 </View>
             </View>
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     titleText: {
         fontSize: hp(4),
         fontWeight: theme.fontWeights.bold,
-        color: theme.colors.light,
+        color: theme.colors.secondary,
     },
 
     form:{
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     forgotPassword: {
         textAlign: "right",
         fontWeight: theme.fontWeights.bolder,
-        color: theme.colors.light,
+        color: theme.colors.secondary,
     },
     signup:{
         flexDirection: 'row',
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
 
     signupText: {
         textAlign: 'center',
-        color: theme.colors.light,
+        color: theme.colors.secondary,
         fontSize: hp(1.8)
     }
 })

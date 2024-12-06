@@ -66,7 +66,7 @@ const SignUp = () => {
     };
 
     return (
-        <ScreenWrapper bg={theme.colors.dark}>
+        <ScreenWrapper bg={theme.colors.darker}>
             <StatusBar style='dark' />
             <ScrollView>
                 <View style={styles.container}>
@@ -81,7 +81,7 @@ const SignUp = () => {
                     {/*form*/}
 
                     <View style={styles.form}>
-                        <Text style={{ fontSize: hp(1.7), color: theme.colors.light }}>
+                        <Text style={{ fontSize: hp(1.7), color: theme.colors.secondary }}>
                             Please Enter Details to Create a new Account.
                         </Text>
                         <Input
@@ -111,7 +111,7 @@ const SignUp = () => {
                                 Already Have an Account?
                             </Text>
                             <Pressable onPress={() => router.push('login')}>
-                                <Text style={[styles.loginText, { color: theme.colors.success, fontWeight: theme.fontWeights.bold }]}>
+                                <Text style={[styles.loginText, { color: theme.colors.Button2, fontWeight: theme.fontWeights.bold }]}>
                                     Login
                                 </Text>
                             </Pressable>
@@ -135,8 +135,8 @@ const styles = StyleSheet.create({
     titleText: {
         fontSize: hp(4),
         fontWeight: theme.fontWeights.bold,
-        color: theme.colors.light,
-    },
+    color: theme.colors.light,
+    },    
 
     form: {
         gap: 18
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
 
     loginText: {
         textAlign: 'center',
-        color: theme.colors.light,
+        color: theme.colors.secondary,
         fontSize: hp(1.8),
         marginBottom: hp(5)
     }
