@@ -61,14 +61,13 @@ const styles = StyleSheet.create({
         fontSize: hp(4),
         textAlign: 'center',
         fontWeight: theme.fontWeights.medium,
-        font: theme.fonts.primary
     },
 
     subTitle: {
         textAlign: 'center',
         paddingHorizontal: wp(10),
         fontSize: hp(1.8),
-        color: theme.colors.secondary,
+        color: theme.colors.lightText,
     },
 
     button: {
@@ -86,7 +85,7 @@ const styles = StyleSheet.create({
 
     loginText:{
         textAlign: 'center',
-        color: theme.colors.secondary,
+        color: theme.colors.lightText,
         fontSize: hp(1.8)
     }
 

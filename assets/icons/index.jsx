@@ -29,6 +29,7 @@ import Pause from './pause';
 import Idea from './idea';
 import Rocket from './rocket';
 import CheckBox from './checkbox';
+import ArrowRight from './ArrowRight';
 
 const icons = {
     home: Home,
@@ -58,7 +59,8 @@ const icons = {
     pause : Pause,
     idea : Idea,
     rocket : Rocket,
-    checkbox : CheckBox
+    checkbox : CheckBox,
+    arrowRight : ArrowRight
 }
 
 const Icon = ({name, ...props}) => {

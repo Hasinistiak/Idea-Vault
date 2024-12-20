@@ -81,7 +81,7 @@ const SignUp = () => {
                     {/*form*/}
 
                     <View style={styles.form}>
-                        <Text style={{ fontSize: hp(1.7), color: theme.colors.secondary }}>
+                        <Text style={{ fontSize: 17, color: theme.colors.lightText }}>
                             Please Enter Details to Create a new Account.
                         </Text>
                         <Input
@@ -130,10 +130,11 @@ const styles = StyleSheet.create({
         flex: 1,
         gap: 45,
         paddingHorizontal: wp(5),
+        paddingVertical: hp(7)
     },
 
     titleText: {
-        fontSize: hp(4),
+        fontSize: 30,
         fontWeight: theme.fontWeights.bold,
     color: theme.colors.light,
     },    
@@ -150,8 +151,8 @@ const styles = StyleSheet.create({
 
     loginText: {
         textAlign: 'center',
-        color: theme.colors.secondary,
-        fontSize: hp(1.8),
+        color: theme.colors.lightText,
+        fontSize: 18,
         marginBottom: hp(5)
     }
 });

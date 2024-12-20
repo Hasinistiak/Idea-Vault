@@ -2,6 +2,7 @@ import React from 'react';
 import { Stack, usePathname } from 'expo-router'; 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Slot } from 'expo-router'; 
+import { ThemeProvider } from '../../contexts/ThemeContext';
 
 const _layout = () => {
   return (
@@ -12,10 +13,10 @@ const _layout = () => {
 };
 
 const MainLayout = () => {
-  const pathname = usePathname(); // Get the current route path
+  const pathname = usePathname(); 
 
   const getTabAnimation = () => {
-    return 'slide_from_right'; // Apply fade_from_bottom for all tab screens
+    return 'none'; 
   };
 
   return (
@@ -23,7 +24,7 @@ const MainLayout = () => {
       screenOptions={{
         headerShown: false,
         gestureEnabled: true,
-        animation: getTabAnimation(), // Apply fade_from_bottom for tab screens
+        animation: getTabAnimation(), 
         gestureDirection: 'horizontal',
       }}
     >

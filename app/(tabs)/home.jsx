@@ -24,46 +24,33 @@ import Icon from '../../assets/icons';
 import { useAuth } from '../../contexts/AuthContext';
 import { CreateIdea, fetchUserIdeas, UpdateIdea } from '../../services/ideaService';
 import { router, useFocusEffect, useRouter } from 'expo-router';
+import Loading from '../../components/Loading';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const Home = () => {
-  const scaleValue = useRef(new Animated.Value(1)).current;
   const { user } = useAuth();
-  const [idea, setIdea] = useState('');
+
   const [ideas, setIdeas] = useState([]);
-  const [description, setDescription] = useState('');
-  const [modalVisible, setModalVisible] = useState(false);
   const [longPressModalVisible, setLongPressModalVisible] = useState(false);
   const [selectedIdea, setSelectedIdea] = useState(null);
   const route = useRouter();
+  const [loading, setLoading] = useState(true);
+  const { theme: apptheme } = useTheme();
 
-  const handleCreateIdea = async () => {
-    if (!idea.trim()) {
-      Alert.alert('Naming Issue', 'Idea Must Have a Name');
-      return;
-    }
-
-    const newIdea = {
-      title: idea.trim(),
-      userId: user?.id,
-      description: description.trim(),
-      state: 'idea',
-      ranked: false,
-    };
-
-    const res = await CreateIdea(newIdea);
-    if (res.success) {
-      setIdeas((prevIdeas) => [res.data, ...prevIdeas]);
-      setIdea('');
-      setDescription('');
-      setModalVisible(false);
-    }
-  };
+  const scrollY = useRef(new Animated.Value(0)).current;
 
   const fetchIdeas = async () => {
-    const userId = user?.id;
-    const result = await fetchUserIdeas(userId);
-    if (result.success) {
-      setIdeas(result.data);
+    setLoading(true);
+    try {
+      const userId = user?.id;
+      const result = await fetchUserIdeas(userId);
+      if (result.success) {
+        setIdeas(result.data);
+      }
+    } catch (error) {
+      Alert.alert("Error fetching ideas:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -73,7 +60,6 @@ const Home = () => {
     }, [])
   );
 
-
   const handleLongPress = (idea) => {
     setSelectedIdea(idea);
     setLongPressModalVisible(true);
@@ -82,144 +68,193 @@ const Home = () => {
   const handleIdeaStateChange = async (newState) => {
     if (!selectedIdea) return;
 
-    const updatedFields = { state: newState }; // The object with the field to update
+    const updatedFields = { state: newState };
     const res = await UpdateIdea(user.id, updatedFields, selectedIdea.id);
 
     if (res.success) {
       await fetchIdeas();
-
       setLongPressModalVisible(false);
     } else {
       Alert.alert('Error', 'Failed to update idea state.');
     }
   };
 
-
-  // Separate the ideas into ranked and unranked
   const rankedIdeas = ideas.filter((idea) => idea.ranked);
   const unrankedIdeas = ideas.filter((idea) => !idea.ranked);
 
   return (
-    <ScreenWrapper bg={theme.colors.darker}>
+    <ScreenWrapper bg={apptheme === 'dark' ? theme.colors.darker : theme.colors.light}>
       <View style={styles.container}>
-        <Header title={'Idea Board'} showBackButton={false} showProfileIcon={true} mr={wp(4)} showSearchIcon={true}/>
+        {/* Header with Scroll Animation */}
+        <Animated.View
+          style={[
+            styles.header,
+            {
+              transform: [
+                {
+                  scale: scrollY.interpolate({
+                    inputRange: [0, 150],
+                    outputRange: [1, 0.8],
+                    extrapolate: 'clamp',
+                  }),
+                },
+              ],
+              opacity: scrollY.interpolate({
+                inputRange: [0, 100],
+                outputRange: [1, 0.5],
+                extrapolate: 'clamp',
+              }),
+            },
+          ]}
+        >
+          <Header
+            title="Idea Board"
+            showBackButton={false}
+            showProfileIcon={true}
+            mr={wp(4)}
+            showSearchIcon={true}
+          />
+        </Animated.View>
 
-        {/* Ranked Section */}
-        {rankedIdeas.length > 0 && (
-          <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-            <Text style={styles.sectionTitle}>Ranked Ideas</Text>
-            {rankedIdeas
-              .sort((a, b) => b.score - a.score)  // Sort the ideas based on the score in descending order
-              .map((idea, index) => (
-                <TouchableOpacity
-                  key={idea.id}
-                  onPress={() =>
-                    router.push({
-                      pathname: 'ideaPage',
-                      params: {
-                        ideaId: idea.id,
-                        ideaTitle: idea.title,
-                        ideaDescription: idea.description,
-                        ideaRanked: idea.ranked,
-                        ideaState: idea.state,
-                        ideaScore: idea.score,
-                      },
-                    })
-                  }
-                  onLongPress={() => handleLongPress(idea)}
+        {loading ? (
+          <View style={styles.centeredContainer}>
+            <Loading />
+          </View>
+        ) : (
+          <ScrollView
+            contentContainerStyle={styles.scrollContainer}
+            showsVerticalScrollIndicator={false}
+            onScroll={Animated.event(
+              [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+              { useNativeDriver: false }  // Set to false for debugging
+            )}
+          >
+            {/* Ranked Ideas Section */}
+            {rankedIdeas.length > 0 && (
+              <View style={{ marginBottom: hp(17), marginTop: hp(2) }}>
+                <Text
+                  style={[
+                    styles.sectionTitle,
+                    { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText,
+                      marginTop: hp(10)
+                     },
+                  ]}
                 >
-                  <Text style={styles.cardRank}>{index + 1}</Text>
-                  <View style={styles.rankedCard}>
-                    <View style={styles.cardDetails}>
-                      <Text style={styles.cardTitle}>{idea.title}</Text>
-                      <Text style={styles.cardScore}>{idea.score}</Text>
+                  Ranked Ideas
+                </Text>
+                {rankedIdeas
+                  .sort((a, b) => b.score - a.score)
+                  .map((idea, index) => (
+                    <TouchableOpacity
+                      key={idea.id}
+                      onPress={() =>
+                        router.push({
+                          pathname: 'ideaPage',
+                          params: {
+                            ideaId: idea.id,
+                            ideaTitle: idea.title,
+                            ideaDescription: idea.description,
+                            ideaRanked: idea.ranked,
+                            ideaState: idea.state,
+                            ideaScore: idea.score,
+                          },
+                        })
+                      }
+                      onLongPress={() => handleLongPress(idea)}
+                    >
+                      <Text
+                        style={[
+                          styles.cardRank,
+                          { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
+                        ]}
+                      >
+                        {index + 1}
+                      </Text>
+                      <View
+                        style={[
+                          styles.rankedCard,
+                          { backgroundColor: apptheme === 'light' ? theme.colors.lightCard : theme.colors.dark },
+                        ]}
+                      >
+                        <View style={styles.cardDetails}>
+                          <Text
+                            style={[
+                              styles.cardTitle,
+                              { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
+                            ]}
+                          >
+                            {idea.title}
+                          </Text>
+                          <Text
+                            style={[
+                              styles.cardScore,
+                              { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
+                            ]}
+                          >
+                            {idea.score}
+                          </Text>
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                  ))}
+              </View>
+            )}
+
+            {/* Unranked Ideas Section */}
+            {unrankedIdeas.length > 0 && (
+              <View style={{ marginBottom: hp(15), marginTop: hp(7) }}>
+                <Text
+                  style={[
+                    styles.sectionTitle,
+                    { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
+                  ]}
+                >
+                  Unranked Ideas
+                </Text>
+                {unrankedIdeas.map((idea) => (
+                  <TouchableOpacity
+                    key={idea.id}
+                    onPress={() =>
+                      router.push({
+                        pathname: 'ideaPage',
+                        params: {
+                          ideaId: idea.id,
+                          ideaTitle: idea.title,
+                          ideaDescription: idea.description,
+                          ideaRanked: idea.ranked,
+                          ideaState: idea.state,
+                        },
+                      })
+                    }
+                  >
+                    <View
+                      style={[
+                        styles.card,
+                        { backgroundColor: apptheme === 'light' ? theme.colors.lightCard : theme.colors.dark },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.cardTitle,
+                          { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
+                        ]}
+                      >
+                        {idea.title}
+                      </Text>
                     </View>
-                  </View>
-                </TouchableOpacity>
-              ))}
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+
+            {/* Empty State */}
+            {unrankedIdeas.length === 0 && rankedIdeas.length === 0 && (
+              <View style={styles.centeredContainer}>
+                <Text style={styles.emptyText}>Nothing Here</Text>
+              </View>
+            )}
           </ScrollView>
         )}
-
-        {/* Unranked Section */}
-        {unrankedIdeas.length > 0 && (
-          <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-            <Text style={styles.sectionTitle}>Unranked Ideas</Text>
-            {unrankedIdeas.map((idea) => (
-              <TouchableOpacity
-                key={idea.id}
-                onPress={() => router.push({ pathname: 'ideaPage', params: { ideaId: idea.id, ideaTitle: idea.title, ideaDescription: idea.description, ideaRanked: idea.ranked, ideaState: idea.state } })}
-              >
-                <View style={styles.card}>
-                  <Text style={styles.cardTitle}>{idea.title}</Text>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        )}
-
-        {
-          unrankedIdeas.length === 0 && rankedIdeas.length === 0 && (
-            <View style={styles.centeredContainer}>
-              <Text style={styles.emptyText}>Nothing Here</Text>
-            </View>
-          )
-
-        }
-
-
-        {/* Add Button */}
-        <TouchableOpacity
-          onPress={() => setModalVisible(true)}
-          style={styles.addButton}
-        >
-          <Icon name="add" color={theme.colors.darker} />
-
-        </TouchableOpacity>
-
-        {/* Modal for adding idea */}
-        <Modal
-          visible={modalVisible}
-          transparent={true}
-          animationType="slide"
-          onRequestClose={() => setModalVisible(false)}
-        >
-          <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-            <View style={styles.modalContainer}>
-              <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <View style={styles.modalContent}>
-                  <Text style={styles.modalTitle}>Add New Idea</Text>
-
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Title (required)"
-                    placeholderTextColor={theme.colors.light}
-                    value={idea}
-                    onChangeText={setIdea}
-                  />
-
-                  <TextInput
-                    style={[styles.input, styles.descriptionInput]}
-                    placeholder="Description (optional)"
-                    placeholderTextColor={theme.colors.light}
-                    value={description}
-                    onChangeText={setDescription}
-                    multiline
-                  />
-
-                  <View style={styles.modalActions}>
-                    <Pressable style={styles.button} onPress={() => setModalVisible(false)}>
-                      <Text style={styles.buttonText}>Cancel</Text>
-                    </Pressable>
-
-                    <Pressable style={styles.Createbutton} onPress={handleCreateIdea}>
-                      <Text style={styles.buttonText}>Create</Text>
-                    </Pressable>
-                  </View>
-                </View>
-              </TouchableWithoutFeedback>
-            </View>
-          </TouchableWithoutFeedback>
-        </Modal>
 
         {/* Modal for Long Press Actions */}
         <Modal
@@ -228,22 +263,37 @@ const Home = () => {
           animationType="slide"
           onRequestClose={() => setLongPressModalVisible(false)}
         >
-          <TouchableWithoutFeedback onPress={()=> setLongPressModalVisible(false)}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Manage Idea</Text>
-              <Pressable style={styles.Holdbutton} onPress={() => handleIdeaStateChange('onHold')}>
-                <Text style={styles.longpressButtonText}>Push to On Hold</Text>
-              </Pressable>
-              <Pressable style={styles.Executionbutton} onPress={() => handleIdeaStateChange('execution')}>
-                <Text style={styles.longpressButtonText}>Push to Execution</Text>
-              </Pressable>
+          <TouchableWithoutFeedback onPress={() => setLongPressModalVisible(false)}>
+            <View style={styles.modalContainer}>
+              <View
+                style={[
+                  styles.modalContent,
+                  { backgroundColor: apptheme === 'dark' ? theme.colors.darker : theme.colors.light },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.modalTitle,
+                    { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
+                  ]}
+                >
+                  Manage Idea
+                </Text>
+                <Pressable style={styles.Holdbutton} onPress={() => handleIdeaStateChange('onHold')}>
+                  <Text style={styles.longpressButtonText}>Push to On Hold</Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.Executionbutton, { backgroundColor: theme.colors.Button2 }]}
+                  onPress={() => handleIdeaStateChange('execution')}
+                >
+                  <Text style={styles.longpressButtonText}>Push to Execution</Text>
+                </Pressable>
+              </View>
             </View>
-          </View>
           </TouchableWithoutFeedback>
         </Modal>
       </View>
-      <Navbar />
+      <Navbar fetchIdeas={fetchIdeas} />
     </ScreenWrapper>
   );
 };
@@ -255,6 +305,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
   },
+  header: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1,
+  },
   scrollContainer: {
     padding: 16,
   },
@@ -265,26 +322,23 @@ const styles = StyleSheet.create({
     color: theme.colors.light,
   },
   card: {
-    backgroundColor: theme.colors.dark,
     padding: wp(4),
-    borderRadius: 12,
+    borderRadius: 15,
     marginBottom: hp(2),
   },
   rankedCard: {
-    backgroundColor: theme.colors.dark,
     padding: wp(4),
     borderRadius: 12,
     marginBottom: hp(2),
     marginLeft: wp(8),
   },
   cardTitle: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: theme.fontWeights.medium,
     color: theme.colors.secondary,
   },
-
   cardScore: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: theme.fontWeights.medium,
     color: theme.colors.secondary,
   },
@@ -298,65 +352,27 @@ const styles = StyleSheet.create({
   },
   cardDetails: {
     flexDirection: 'row',
-    justifyContent: 'space-between'
-  },
-  
-  addButton: {
-    position: 'absolute',
-    backgroundColor: theme.colors.Button2,
-    padding: hp(1.8),
-    borderRadius: 10,
-    bottom: hp(2),
-    right: wp(5),
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: theme.fontWeights.bold,
-    marginBottom: hp(2),
-    color: 'white',
-  },
-  input: {
-    backgroundColor: theme.colors.darker,
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: hp(3),
-    color: theme.colors.secondary,
-  },
-  descriptionInput: {
-    height: hp(20),
-    marginBottom: hp(3),
-    textAlignVertical: 'top',
-  },
-  modalActions: {
-    flexDirection: 'row',
     justifyContent: 'space-between',
   },
   Holdbutton: {
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: 'gray',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
     alignItems: 'center',
-    marginBottom: hp(2)
+    marginBottom: hp(2),
   },
   Executionbutton: {
-    backgroundColor: 'rgba(255,255,255,0.05)',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
     alignItems: 'center',
-    marginBottom: hp(2)
+    marginBottom: hp(2),
   },
-  buttonText: {
-    color: 'black',
+  longpressButtonText: {
+    color: theme.colors.darker,
     fontSize: 16,
-    fontWeight: theme.fontWeights.medium,
+    fontWeight: theme.fontWeights.bold,
   },
   modalContainer: {
     flex: 1,
@@ -374,34 +390,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: theme.fontWeights.bold,
     marginBottom: hp(2),
-    color: 'white',
-  },
-  button: {
-    backgroundColor: theme.colors.light,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: hp(1),
-  },
-  Createbutton: {
-    backgroundColor: theme.colors.Button2,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: hp(1),
-  },
-  longpressButtonText: {
-    color: theme.colors.light,
-    fontSize: 16,
-    fontWeight: theme.fontWeights.bold,
+
   },
   centeredContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: hp(30)
+    marginVertical: hp(30),
   },
   emptyText: {
     fontSize: 18,

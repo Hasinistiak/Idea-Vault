@@ -6,12 +6,15 @@ import theme from '../constants/theme';
 import Header from '../components/Header';
 import Icon from '../assets/icons';
 import { useRouter } from 'expo-router';
+import { useTheme } from '../contexts/ThemeContext';
 
 const searchPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [ideas, setIdeas] = useState([]);
-  const router = useRouter()
-  
+  const router = useRouter();
+  const { theme: apptheme } = useTheme();
+
+
   // Fetch ideas based on search query
   useEffect(() => {
     const fetchIdeas = async () => {
@@ -19,9 +22,9 @@ const searchPage = () => {
 
       try {
         const { data, error } = await supabase
-          .from('ideas')  // Assuming 'posts' is your table with title & description
+          .from('ideas') // Assuming 'posts' is your table with title & description
           .select('*')
-          .ilike('title', `%${searchQuery}%`);  // 'ilike' for case-insensitive search
+          .ilike('title', `%${searchQuery}%`); // 'ilike' for case-insensitive search
 
         if (error) {
           console.error(error);
@@ -34,45 +37,48 @@ const searchPage = () => {
     };
 
     fetchIdeas();
-  }, [searchQuery]);  // Trigger when the search query changes
+  }, [searchQuery]); // Trigger when the search query changes
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.card} 
-    onPress={() =>
-      router.push({
-        pathname: 'ideaPage',
-        params: {
-          ideaId: item.id,
-          ideaTitle: item.title,
-          ideaDescription: item.description,
-          ideaRanked: item.ranked,
-          ideaState: item.state,
-          ideaScore: item.score,
-        },
-      })
-    }>
-      <Text style={styles.cardTitle}>{item.title}</Text>
+    <TouchableOpacity
+      style={[styles.card, { backgroundColor: apptheme === 'light' ? theme.colors.lightCard : theme.colors.dark }]}
+      onPress={() =>
+        router.push({
+          pathname: 'ideaPage',
+          params: {
+            ideaId: item.id,
+            ideaTitle: item.title,
+            ideaDescription: item.description,
+            ideaRanked: item.ranked,
+            ideaState: item.state,
+            ideaScore: item.score,
+          },
+        })
+      }
+    >
+      <Text style={[styles.cardTitle, {color: apptheme === 'light' ? theme.colors.darker : theme.colors.light}]}>{item.title}</Text>
     </TouchableOpacity>
   );
 
   return (
-    <ScreenWrapper bg={theme.colors.darker}>
-      <Header title={'Search'}/>
-      
-      <View style={styles.container}>
+    <ScreenWrapper bg={apptheme === 'dark' ? theme.colors.darker : theme.colors.light}>
+      <View style={styles.headerContainer}>
+        <Header />
+        <View style={[styles.searchBar, {backgroundColor: apptheme === 'dark'? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',}]}>
+
+          <TextInput
+            style={[styles.searchInput, { color: apptheme === 'dark' ? theme.colors.light : theme.colors.darker }]}
+            placeholder="Search Your Ideas..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholderTextColor={apptheme === 'light' ? theme.colors.darker : theme.colors.light}
+          />
+          <Icon name={'search'} color={apptheme === 'dark' ? theme.colors.light : theme.colors.darker} size={25} />
+        </View>
+      </View>
+
+      <View style={[styles.container, { backgroundColor: apptheme === 'dark' ? theme.colors.darker : theme.colors.light }]}>
         <FlatList
-          ListHeaderComponent={
-            <View style={styles.searchBar}>
-              <Icon name={'search'} color={'white'} size={20} />
-              <TextInput
-                style={styles.searchInput}
-                placeholder="Search Your Ideas..."
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                placeholderTextColor={theme.colors.light}
-              />
-            </View>
-          }
           data={ideas}
           renderItem={renderItem}
           keyExtractor={(item) => item.title}
@@ -90,30 +96,37 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
-    backgroundColor: theme.colors.darker,
   },
-  searchBar: {
+  headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: theme.colors.dark,
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    justifyContent: 'space-between',
     marginBottom: 20,
+  },
+  searchBar: {
+    top: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 50,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    flex: 1,
+    marginLeft: 45,
+    marginRight: 10,
+    marginTop: 15
   },
   searchInput: {
     flex: 1,
     height: 40,
     fontSize: 16,
-    color: theme.colors.light,
-    marginLeft: 8,  // Add spacing between icon and input
+
   },
   resultsContainer: {
     paddingBottom: 20,
   },
   card: {
     backgroundColor: theme.colors.dark,
-    marginBottom: 15,
+    marginBottom: 20,
     padding: 15,
     borderRadius: 12,
   },

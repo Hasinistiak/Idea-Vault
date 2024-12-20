@@ -9,15 +9,16 @@ import { GetIdeaDetails, UpdateIdea } from '../services/ideaService';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useAuth } from '../contexts/AuthContext';
 import { ScrollView } from 'react-native-gesture-handler';
+import { useTheme } from '../contexts/ThemeContext';
 
 const RankingPage = () => {
-  const {user} = useAuth()
+  const { user } = useAuth()
   const [feasibility, setFeasibility] = useState(1);
   const [impact, setImpact] = useState(1);
   const [excitement, setExcitement] = useState(1);
   const [scalability, setScalability] = useState(1);
   const [loading, setLoading] = useState(false);
-
+  const { theme: apptheme } = useTheme();
   const { ideaId } = useLocalSearchParams();
   const router = useRouter();
 
@@ -45,7 +46,7 @@ const RankingPage = () => {
         Alert.alert('Error', 'Failed to fetch idea details.');
       }
     };
-  
+
     fetchIdeaDetails();
   }, [ideaId]);
 
@@ -60,8 +61,8 @@ const RankingPage = () => {
         feasibility: feasibility,
         impact: impact
 
-       };
-      const res = await UpdateIdea(user?.id ,updatedIdea, ideaId);
+      };
+      const res = await UpdateIdea(user?.id, updatedIdea, ideaId);
 
       if (res.success) {
         router.push('home');
@@ -76,69 +77,78 @@ const RankingPage = () => {
   };
 
   return (
-    <ScreenWrapper bg={theme.colors.darker}>
+    <ScreenWrapper bg={apptheme === 'dark' ? theme.colors.darker : theme.colors.light}>
       <Header ml={wp(3)} />
-      <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
-        {/* Average Score */}
-        <View style={styles.averageContainer}>
-          <Text style={styles.averageLabel}>Score:</Text>
-          <Text style={styles.averageValue}>{formatValue(average)}</Text>
+      <ScrollView showsVerticalScrollIndicator={false} style={[styles.container, { backgroundColor: apptheme === 'dark' ? theme.colors.darker : theme.colors.light }]}>
+
+        <View style={[styles.card, { backgroundColor: apptheme === 'light' ? theme.colors.lightCard : theme.colors.dark }]}>
+          {/* Average Score */}
+          <View style={styles.averageContainer}>
+            <Text style={[styles.averageLabel, { color: apptheme === 'light' ? theme.colors.darker : theme.colors.light }]}>Score:</Text>
+            <Text style={[styles.averageValue, { color: apptheme === 'light' ? theme.colors.darker : theme.colors.light }]}>{formatValue(average)}</Text>
+          </View>
+
         </View>
 
-        {/* Feasibility Selector */}
-        <View style={styles.selectorContainer}>
-          <Text style={styles.label}>Feasibility</Text>
-          <View style={styles.selector}>
-            <TouchableOpacity onPress={() => updateValue(feasibility, setFeasibility, -1)}>
-              <Ionicons name="chevron-back" size={32} color="white" />
-            </TouchableOpacity>
-            <Text style={styles.value}>{formatValue(feasibility)}</Text>
-            <TouchableOpacity onPress={() => updateValue(feasibility, setFeasibility, 1)}>
-              <Ionicons name="chevron-forward" size={32} color="white" />
-            </TouchableOpacity>
-          </View>
-        </View>
 
-        {/* Impact Selector */}
-        <View style={styles.selectorContainer}>
-          <Text style={styles.label}>Impact</Text>
-          <View style={styles.selector}>
-            <TouchableOpacity onPress={() => updateValue(impact, setImpact, -1)}>
-              <Ionicons name="chevron-back" size={32} color="white" />
-            </TouchableOpacity>
-            <Text style={styles.value}>{formatValue(impact)}</Text>
-            <TouchableOpacity onPress={() => updateValue(impact, setImpact, 1)}>
-              <Ionicons name="chevron-forward" size={32} color="white" />
-            </TouchableOpacity>
-          </View>
-        </View>
+        <View style={[styles.labelCard, { backgroundColor: apptheme === 'light' ? theme.colors.lightCard : theme.colors.dark }]}>
 
-        {/* Scalability Selector */}
-        <View style={styles.selectorContainer}>
-          <Text style={styles.label}>Scalability</Text>
-          <View style={styles.selector}>
-            <TouchableOpacity onPress={() => updateValue(scalability, setScalability, -1)}>
-              <Ionicons name="chevron-back" size={32} color="white" />
-            </TouchableOpacity>
-            <Text style={styles.value}>{formatValue(scalability)}</Text>
-            <TouchableOpacity onPress={() => updateValue(scalability, setScalability, 1)}>
-              <Ionicons name="chevron-forward" size={32} color="white" />
-            </TouchableOpacity>
+          {/* Feasibility Selector */}
+          <View style={styles.selectorContainer}>
+            <Text style={[styles.label, { color: apptheme === 'light' ? theme.colors.darker : theme.colors.light }]}>Feasibility</Text>
+            <View style={styles.selector}>
+              <TouchableOpacity onPress={() => updateValue(feasibility, setFeasibility, -1)}>
+                <Ionicons name="chevron-back" size={32} color= { apptheme === 'light' ? theme.colors.darker : theme.colors.light} />
+              </TouchableOpacity>
+              <Text style={[styles.value, {color: apptheme === 'dark' ? theme.colors.secondary : theme.colors.darker}]}>{formatValue(feasibility)}</Text>
+              <TouchableOpacity onPress={() => updateValue(feasibility, setFeasibility, 1)}>
+                <Ionicons name="chevron-forward" size={32} color= { apptheme === 'light' ? theme.colors.darker : theme.colors.light} />
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
 
-        {/* Excitement Selector */}
-        <View style={styles.selectorContainer}>
-          <Text style={styles.label}>Excitement</Text>
-          <View style={styles.selector}>
-            <TouchableOpacity onPress={() => updateValue(excitement, setExcitement, -1)}>
-              <Ionicons name="chevron-back" size={32} color="white" />
-            </TouchableOpacity>
-            <Text style={styles.value}>{formatValue(excitement)}</Text>
-            <TouchableOpacity onPress={() => updateValue(excitement, setExcitement, 1)}>
-              <Ionicons name="chevron-forward" size={32} color="white" />
-            </TouchableOpacity>
+          {/* Impact Selector */}
+          <View style={styles.selectorContainer}>
+            <Text style={[styles.label, { color: apptheme === 'light' ? theme.colors.darker : theme.colors.light }]}>Impact</Text>
+            <View style={styles.selector}>
+              <TouchableOpacity onPress={() => updateValue(impact, setImpact, -1)}>
+                <Ionicons name="chevron-back" size={32} color= { apptheme === 'light' ? theme.colors.darker : theme.colors.light} />
+              </TouchableOpacity>
+              <Text style={[styles.value, {color: apptheme === 'dark' ? theme.colors.secondary : theme.colors.darker}]}>{formatValue(impact)}</Text>
+              <TouchableOpacity onPress={() => updateValue(impact, setImpact, 1)}>
+                <Ionicons name="chevron-forward" size={32} color= { apptheme === 'light' ? theme.colors.darker : theme.colors.light} />
+              </TouchableOpacity>
+            </View>
           </View>
+
+          {/* Scalability Selector */}
+          <View style={styles.selectorContainer}>
+            <Text style={[styles.label, { color: apptheme === 'light' ? theme.colors.darker : theme.colors.light }]}>Scalability</Text>
+            <View style={styles.selector}>
+              <TouchableOpacity onPress={() => updateValue(scalability, setScalability, -1)}>
+                <Ionicons name="chevron-back" size={32} color= { apptheme === 'light' ? theme.colors.darker : theme.colors.light}/>
+              </TouchableOpacity>
+              <Text style={[styles.value, {color: apptheme === 'dark' ? theme.colors.secondary : theme.colors.darker}]}>{formatValue(scalability)}</Text>
+              <TouchableOpacity onPress={() => updateValue(scalability, setScalability, 1)}>
+                <Ionicons name="chevron-forward" size={32} color= { apptheme === 'light' ? theme.colors.darker : theme.colors.light}/>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Excitement Selector */}
+          <View style={styles.selectorContainer}>
+            <Text style={[styles.label, { color: apptheme === 'light' ? theme.colors.darker : theme.colors.light }]}>Excitement</Text>
+            <View style={styles.selector}>
+              <TouchableOpacity onPress={() => updateValue(excitement, setExcitement, -1)}>
+                <Ionicons name="chevron-back" size={32} color= { apptheme === 'light' ? theme.colors.darker : theme.colors.light} />
+              </TouchableOpacity>
+              <Text style={[styles.value, {color: apptheme === 'dark' ? theme.colors.secondary : theme.colors.darker}]}>{formatValue(excitement)}</Text>
+              <TouchableOpacity onPress={() => updateValue(excitement, setExcitement, 1)}>
+                <Ionicons name="chevron-forward" size={32} color= { apptheme === 'light' ? theme.colors.darker : theme.colors.light}/>
+              </TouchableOpacity>
+            </View>
+          </View>
+
         </View>
 
         {/* Rank Button */}
@@ -161,14 +171,14 @@ const RankingPage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.darker,
     paddingHorizontal: wp(5),
   },
   selectorContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: hp(3),
+    marginTop: hp(1.5),
+    marginBottom: hp(1.5),
   },
   label: {
     fontSize: 20,
@@ -182,12 +192,10 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 30,
     fontWeight: 'bold',
-    color: theme.colors.secondary,
     marginHorizontal: wp(2),
   },
   averageContainer: {
     marginTop: hp(0),
-    marginBottom: hp(2),
     alignItems: 'center',
   },
   averageLabel: {
@@ -205,7 +213,7 @@ const styles = StyleSheet.create({
     padding: wp(4),
     alignItems: 'center',
     borderRadius: 12,
-    marginTop: hp(10),
+
     marginBottom: hp(10),
   },
   buttonText: {
@@ -213,6 +221,18 @@ const styles = StyleSheet.create({
     fontWeight: theme.fontWeights.bold,
     fontSize: 17,
   },
+  card: {
+    padding: wp(3),
+    borderRadius: 12,
+    marginBottom: hp(4),
+    marginTop: hp(3)
+  },
+
+  labelCard: {
+    padding: wp(3),
+    borderRadius: 12,
+    marginBottom: hp(4),
+  }
 });
 
 export default RankingPage;

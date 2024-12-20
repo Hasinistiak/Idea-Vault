@@ -57,7 +57,7 @@ const Login = () => {
             {/*form*/}
 
             <View style={styles.form}>
-                <Text style={{fontSize: hp(1.7), color: theme.colors.light}}>
+                <Text style={{fontSize: 17, color: theme.colors.light}}>
                     Please Login to Continue.
                 </Text>
                 <Input
@@ -101,12 +101,13 @@ const styles = StyleSheet.create({
         flex: 1,
         gap: 45,
         paddingHorizontal: wp(5),
+        paddingVertical: hp(7)
     },
 
     titleText: {
-        fontSize: hp(4),
+        fontSize: 30,
         fontWeight: theme.fontWeights.bold,
-        color: theme.colors.secondary,
+        color: theme.colors.lightText,
     },
 
     form:{
@@ -116,7 +117,7 @@ const styles = StyleSheet.create({
     forgotPassword: {
         textAlign: "right",
         fontWeight: theme.fontWeights.bolder,
-        color: theme.colors.secondary,
+        color: theme.colors.lightText,
     },
     signup:{
         flexDirection: 'row',
@@ -127,7 +128,7 @@ const styles = StyleSheet.create({
 
     signupText: {
         textAlign: 'center',
-        color: theme.colors.secondary,
-        fontSize: hp(1.8)
+        color: theme.colors.lightText,
+        fontSize: 18
     }
 })

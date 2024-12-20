@@ -1,5 +1,5 @@
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useCallback, useState } from 'react'
+import { Animated, Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
+import React, { useCallback, useRef, useState } from 'react'
 import ScreenWrapper from '../../components/ScreenWrapper'
 import theme from '../../constants/theme'
 import Navbar from '../../components/Navbar'
@@ -9,6 +9,9 @@ import { useFocusEffect, useRouter } from 'expo-router'
 import { fetchUserOnHolds, UpdateIdea } from '../../services/ideaService'
 import { hp, wp } from '../../helpers/common'
 import { ScrollView } from 'react-native-gesture-handler'
+import Loading from '../../components/Loading'
+import { useTheme } from '../../contexts/ThemeContext'
+
 
 const onHold = () => {
   const [ideas, setIdeas] = useState([]);
@@ -16,16 +19,28 @@ const onHold = () => {
   const [selectedIdea, setSelectedIdea] = useState(null);
   const [longPressModalVisible, setLongPressModalVisible] = useState(false);
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const { theme: apptheme } = useTheme();
+
+  const scrollY = useRef(new Animated.Value(0)).current;
 
   const fetchOnHolds = async () => {
-    const userId = user?.id;
-    const result = await fetchUserOnHolds(userId);
-    if (result.success) {
-      setIdeas(result.data);
-    } else {
-      Alert.alert('Error', 'Failed to fetch ideas.');
+    setLoading(true); // Start loading
+    try {
+      const userId = user?.id;
+      const result = await fetchUserOnHolds(userId);
+      if (result.success) {
+        setIdeas(result.data);
+      } else {
+        Alert.alert('Error', 'Failed to fetch ideas.');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Something went wrong.');
+    } finally {
+      setLoading(false); // End loading
     }
   };
+
 
   useFocusEffect(
     useCallback(() => {
@@ -52,44 +67,87 @@ const onHold = () => {
     }
   };
   return (
-    <ScreenWrapper bg={theme.colors.darker}>
+    <ScreenWrapper bg={apptheme === 'dark' ? theme.colors.darker : theme.colors.light}>
       <View style={styles.container}>
-        <Header title={'on Hold'} showBackButton={false} showProfileIcon={true} mr={wp(4)} showSearchIcon={true}/>
-        <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-          {ideas.map((idea) => (
-            <TouchableOpacity
-              key={idea.id}
-              onPress={() =>
-                router.push({
-                  pathname: 'ideaPage',
-                  params: {
-                    ideaId: idea.id,
-                    ideaTitle: idea.title,
-                    ideaDescription: idea.description,
-                    ideaRanked: idea.ranked,
-                    ideaState: idea.state,
-                    ideaScore: idea.score,
-                  },
-                })
-              }
-              onLongPress={() => handleLongPress(idea)}
+        <Animated.View
+          style={[
+            styles.header,
+            {
+              transform: [
+                {
+                  scale: scrollY.interpolate({
+                    inputRange: [0, 150],
+                    outputRange: [1, 0.8],
+                    extrapolate: 'clamp',
+                  }),
+                },
+              ],
+              opacity: scrollY.interpolate({
+                inputRange: [0, 100],
+                outputRange: [1, 0.5],
+                extrapolate: 'clamp',
+              }),
+            },
+          ]}
+        >
+          <Header
+            title="On Hold"
+            showBackButton={false}
+            showProfileIcon={true}
+            mr={wp(4)}
+            showSearchIcon={true}
+          />
+        </Animated.View>
+        {loading ? (
+          <View style={styles.centeredContainer}>
+            <Loading />
+          </View>
+        ) : (
+          <>
+            <ScrollView
+              contentContainerStyle={styles.scrollContainer}
+              showsVerticalScrollIndicator={false}
+              onScroll={Animated.event(
+                [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                { useNativeDriver: false }  // Set to false for debugging
+              )}
             >
-              <View style={styles.card}>
-                <Text style={styles.cardTitle}>{idea.title}</Text>
-              </View>
-            </TouchableOpacity>
-          ))}
+              {ideas.map((idea) => (
+                <TouchableOpacity
+                  key={idea.id}
+                  onPress={() =>
+                    router.push({
+                      pathname: 'ideaPage',
+                      params: {
+                        ideaId: idea.id,
+                        ideaTitle: idea.title,
+                        ideaDescription: idea.description,
+                        ideaRanked: idea.ranked,
+                        ideaState: idea.state,
+                        ideaScore: idea.score,
+                      },
+                    })
+                  }
+                  onLongPress={() => handleLongPress(idea)}
+                >
+                  <View style={[styles.card, { backgroundColor: apptheme === 'light' ? theme.colors.lightCard : theme.colors.dark }]}>
+                    <Text style={[styles.cardTitle, { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText }]}>{idea.title}</Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
 
-          {
-            ideas.length === 0 && (
-              <View style={styles.centeredContainer}>
-                <Text style={styles.emptyText}>Nothing Here</Text>
-              </View>
-            )
-          }
+              {
+                ideas.length === 0 && (
+                  <View style={styles.centeredContainer}>
+                    <Text style={styles.emptyText}>Nothing Here</Text>
+                  </View>
+                )
+              }
 
 
-        </ScrollView>
+            </ScrollView>
+          </>
+        )}
       </View>
       <Navbar />
 
@@ -99,21 +157,32 @@ const onHold = () => {
         animationType="slide"
         onRequestClose={() => setLongPressModalVisible(false)}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Change Idea State</Text>
-            <TouchableOpacity style={styles.button} onPress={() => handleIdeaStateChange('idea')}>
-              <Text style={styles.buttonText}>Push to Ideas</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => handleIdeaStateChange('execution')}>
-              <Text style={styles.buttonText}>Push to Executions</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => setLongPressModalVisible(false)}>
-              <Text style={styles.buttonText}>Cancel</Text>
-            </TouchableOpacity>
+        <TouchableWithoutFeedback onPress={() => setLongPressModalVisible(false)}>
+          <View style={styles.modalContainer}>
+            <TouchableWithoutFeedback onPress={() => { /* Prevent modal from closing when clicking inside */ }}>
+              <View style={[styles.modalContent, { backgroundColor: apptheme === 'dark' ? theme.colors.darker : theme.colors.light }]}>
+                <Text style={[
+                  styles.modalTitle,
+                  { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
+                ]}>Change Idea State</Text>
+                <TouchableOpacity style={styles.button} onPress={() => handleIdeaStateChange('idea')}>
+                  <Text style={[
+                    styles.buttonText,
+                    { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
+                  ]}>Push to Ideas</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={() => handleIdeaStateChange('execution')}>
+                  <Text style={[
+                    styles.buttonText,
+                    { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
+                  ]}>Push to Executions</Text>
+                </TouchableOpacity>
+              </View>
+            </TouchableWithoutFeedback>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </Modal>
+
     </ScreenWrapper>
   );
 };
@@ -127,17 +196,24 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     padding: 16,
+    paddingTop: hp(12),
+    marginTop: hp(2)
   },
   card: {
-    backgroundColor: theme.colors.dark,
     padding: wp(5),
-    borderRadius: 12,
+    borderRadius: 15,
     marginBottom: hp(2),
   },
+  header: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1,
+  },
   cardTitle: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: theme.fontWeights.medium,
-    marginBottom: hp(1),
     color: theme.colors.light,
   },
   modalContainer: {
@@ -159,7 +235,7 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   button: {
-    backgroundColor: 'white',
+    backgroundColor: 'gray',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
@@ -167,7 +243,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   buttonText: {
-    color: 'black',
+
     fontSize: 16,
     fontWeight: theme.fontWeights.medium,
   },

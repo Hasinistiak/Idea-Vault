@@ -5,32 +5,35 @@ import { AuthProvider, useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import { getUserData } from '../services/userservice'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { ThemeProvider } from '../contexts/ThemeContext'
 
-const _layout = ()=>{
+const _layout = () => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-    <AuthProvider>
-      <MainLayout/>
-    </AuthProvider>
+      <AuthProvider>
+        <ThemeProvider>
+          <MainLayout />
+        </ThemeProvider>
+      </AuthProvider>
     </GestureHandlerRootView>
   )
 }
 
 const MainLayout = () => {
-  const {setAuth, setUserData} = useAuth();
+  const { setAuth, setUserData } = useAuth();
   const router = useRouter();
 
-  useEffect(()=>{
+  useEffect(() => {
     supabase.auth.onAuthStateChange((_event, session) => {
       //console.log('session user: ', session?.user?.id);
 
 
-      if(session){
+      if (session) {
         setAuth(session?.user)
         updateUserData(session?.user, session?.user?.email);
         router.replace('/home')
 
-      }else{
+      } else {
         setAuth(null)
         router.replace('/welcome')
 
@@ -39,10 +42,10 @@ const MainLayout = () => {
     })
   }, [])
 
-  const updateUserData = async (user, email)=>{
+  const updateUserData = async (user, email) => {
     let res = await getUserData(user?.id);
-    if(res.success) setUserData({...res.data, email});
-  } 
+    if (res.success) setUserData({ ...res.data, email });
+  }
 
   return (
     <Stack
