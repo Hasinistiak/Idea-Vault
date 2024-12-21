@@ -1,17 +1,35 @@
-import { View, Text, Button } from 'react-native'
-import React from 'react'
+import React from 'react';
+import { View, Text, Button, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
-import ScreenWrapper from '../components/ScreenWrapper';
+import { useFonts } from 'expo-font'; // Import useFonts hook
 import Loading from '../components/Loading';
+import { useTheme } from '../contexts/ThemeContext';
 
+const Index = () => {
+  const router = useRouter();
+  const { theme: apptheme} = useTheme();
 
-const index = () => {
-    const router = useRouter();
+  // Load fonts using useFonts hook
+  const [fontsLoaded] = useFonts({
+    'Satoshi-Regular': require('../assets/fonts/Satoshi/Satoshi-Regular.otf'),
+    'Satoshi-Bold': require('../assets/fonts/Satoshi/Satoshi-Bold.otf'),
+    'Satoshi-Medium': require('../assets/fonts/Satoshi/Satoshi-Medium.otf'),
+  });
+
+  if (!fontsLoaded) {
+    // Show a loading indicator until fonts are loaded
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
   return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Loading/>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center',backgroundColor: apptheme === 'light' ? theme.colors.lightCard : theme.colors.dark }}>
+      <Loading />
     </View>
-  )
-}
+  );
+};
 
-export default index
+export default Index;

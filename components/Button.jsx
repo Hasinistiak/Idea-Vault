@@ -45,12 +45,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderCurve: 'continuous',
-        borderRadius: theme.radius.xl,
+        borderRadius: 25,
     },
     text:{
         fontSize: hp(2.5),
         color: theme.colors.darker,
-        fontWeight: theme.fontWeights.bold
+        fontFamily: 'Satoshi-Bold'
     }
 
 

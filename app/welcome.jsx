@@ -58,22 +58,22 @@ const styles = StyleSheet.create({
 
     title: {
         color: theme.colors.light,
-        fontSize: hp(4),
+        fontSize: 40,
         textAlign: 'center',
-        fontWeight: theme.fontWeights.medium,
+        fontFamily: 'Satoshi-Regular'
     },
 
     subTitle: {
         textAlign: 'center',
         paddingHorizontal: wp(10),
-        fontSize: hp(1.8),
+        fontSize: 18,
         color: theme.colors.lightText,
     },
 
     button: {
         marginTop: hp(8),
         gap:30,
-        width: '100%'
+        width: '80%'
     },
 
     bottomTextContainer:{
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     loginText:{
         textAlign: 'center',
         color: theme.colors.lightText,
-        fontSize: hp(1.8)
+        fontSize: 16
     }
 
 })

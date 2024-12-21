@@ -41,7 +41,10 @@ const searchPage = () => {
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
-      style={[styles.card, { backgroundColor: apptheme === 'light' ? theme.colors.lightCard : theme.colors.dark }]}
+      style={[
+        styles.card,
+        { backgroundColor: apptheme === 'light' ? theme.colors.lightCard : theme.colors.dark },
+      ]}
       onPress={() =>
         router.push({
           pathname: 'ideaPage',
@@ -56,12 +59,30 @@ const searchPage = () => {
         })
       }
     >
-      <Text style={[styles.cardTitle, {color: apptheme === 'light' ? theme.colors.darker : theme.colors.light}]}>{item.title}</Text>
+      <Text
+        style={[
+          styles.cardTitle,
+          { color: apptheme === 'light' ? theme.colors.darker : theme.colors.light },
+        ]}
+      >
+        {item.title}
+      </Text>
+      <Text
+        style={[
+          styles.cardDescription,
+          { color: apptheme === 'light' ? theme.colors.darker : theme.colors.light },
+        ]}
+        numberOfLines={2}
+        ellipsizeMode="tail"
+      >
+        {item.description}
+      </Text>
     </TouchableOpacity>
   );
+  
 
   return (
-    <ScreenWrapper bg={apptheme === 'dark' ? theme.colors.darker : theme.colors.light}>
+    <ScreenWrapper bg={apptheme === 'dark' ? theme.colors.darker : theme.colors.white}>
       <View style={styles.headerContainer}>
         <Header />
         <View style={[styles.searchBar, {backgroundColor: apptheme === 'dark'? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',}]}>
@@ -77,7 +98,7 @@ const searchPage = () => {
         </View>
       </View>
 
-      <View style={[styles.container, { backgroundColor: apptheme === 'dark' ? theme.colors.darker : theme.colors.light }]}>
+      <View style={[styles.container, { backgroundColor: apptheme === 'dark' ? theme.colors.darker : theme.colors.white }]}>
         <FlatList
           data={ideas}
           renderItem={renderItem}
@@ -104,7 +125,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   searchBar: {
-    top: 12,
+    top: 15,
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 50,
@@ -119,7 +140,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
     fontSize: 16,
-
+fontFamily: 'Satoshi-Regular'
   },
   resultsContainer: {
     paddingBottom: 20,
@@ -132,7 +153,13 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 16,
-    fontWeight: theme.fontWeights.medium,
     color: theme.colors.light,
+    fontFamily: 'Satoshi-Medium'
+  },
+  cardDescription: {
+    paddingTop: 5,
+    fontSize: 15,
+    color: theme.colors.light,
+    fontFamily: 'Satoshi-Regular'
   },
 });

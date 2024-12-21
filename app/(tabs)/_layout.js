@@ -1,8 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Stack, usePathname } from 'expo-router'; 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { Slot } from 'expo-router'; 
-import { ThemeProvider } from '../../contexts/ThemeContext';
 
 const _layout = () => {
   return (
@@ -14,10 +12,28 @@ const _layout = () => {
 
 const MainLayout = () => {
   const pathname = usePathname(); 
+  const [prevPath, setPrevPath] = useState(pathname);  
 
   const getTabAnimation = () => {
-    return 'none'; 
+    const currentTab = pathname.split('/')[1];
+    const prevTab = prevPath.split('/')[1];  
+
+   
+    if (currentTab > prevTab) {
+      return 'slide_from_left';
+    }
+
+    if (currentTab < prevTab) {
+      return 'slide_from_right';
+    }
+   
+    return 'default';
   };
+
+  useEffect(() => {
+
+    setPrevPath(pathname);
+  }, [pathname]);
 
   return (
     <Stack

@@ -68,27 +68,27 @@ const Executions = () => {
   };
 
   const handleLongPress = (idea) => {
-      setSelectedIdea(idea);
-      setLongPressModalVisible(true);
-    };
-  
-    const handleIdeaStateChange = async (newState) => {
-      if (!selectedIdea) return;
-  
-      const updatedFields = { state: newState };
-      const res = await UpdateIdea(user.id, updatedFields, selectedIdea.id);
-  
-      if (res.success) {
-        await fetchExecutions();
-        setLongPressModalVisible(false);
-      } else {
-        Alert.alert('Error', 'Failed to update idea state.');
-      }
-    };
-    
+    setSelectedIdea(idea);
+    setLongPressModalVisible(true);
+  };
+
+  const handleIdeaStateChange = async (newState) => {
+    if (!selectedIdea) return;
+
+    const updatedFields = { state: newState };
+    const res = await UpdateIdea(user.id, updatedFields, selectedIdea.id);
+
+    if (res.success) {
+      await fetchExecutions();
+      setLongPressModalVisible(false);
+    } else {
+      Alert.alert('Error', 'Failed to update idea state.');
+    }
+  };
+
 
   return (
-    <ScreenWrapper bg={apptheme === 'dark' ? theme.colors.darker : theme.colors.light}>
+    <ScreenWrapper bg={apptheme === 'dark' ? theme.colors.darker : theme.colors.white}>
       <View style={styles.container}>
 
         <Animated.View
@@ -131,7 +131,7 @@ const Executions = () => {
             showsVerticalScrollIndicator={false}
             onScroll={Animated.event(
               [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-              { useNativeDriver: false } 
+              { useNativeDriver: false }
             )}
           >
             {/* First Section: Executions */}
@@ -155,7 +155,19 @@ const Executions = () => {
               >
                 <View style={[styles.card, { backgroundColor: apptheme === 'light' ? theme.colors.lightCard : theme.colors.dark }]}>
                   <View style={styles.row}>
+                    <View style={{width: '90%'}}>
                     <Text style={[styles.cardTitle, { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText }]}>{idea.title}</Text>
+                    <Text
+                      style={[
+                        styles.cardDescription,
+                        { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
+                      ]}
+                      numberOfLines={2}
+                      ellipsizeMode="tail"
+                    >
+                      {idea.description}
+                    </Text>
+                    </View>
                     <Checkbox
                       value={idea.state === 'executed'}
                       onValueChange={(newValue) => handleCheckboxChange(idea, newValue)}
@@ -175,7 +187,7 @@ const Executions = () => {
 
             {/* Second Section: Executed */}
             {executedIdeas.length > 0 && (
-              <Text style={[styles.sectionTitle, { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText }]}>Executed</Text>
+              <Text style={[styles.sectionTitle, { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText, marginTop: hp(24) }]}>Executed</Text>
             )}
 
             {executedIdeas.slice(0, showMoreExecuted).map((idea) => (
@@ -195,9 +207,21 @@ const Executions = () => {
                   })
                 }
               >
-                <View style={[styles.card, { backgroundColor: apptheme === 'light' ? theme.colors.lightCard : theme.colors.dark }]}>
+                <View style={[styles.card, { backgroundColor: apptheme === 'light' ? theme.colors.lightCard : theme.colors.dark, }]}>
                   <View style={styles.row}>
+                  <View style={{width: '90%'}}>
                     <Text style={[styles.executedCardTitle, { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText }]}>{idea.title}</Text>
+                    <Text
+                      style={[
+                        styles.cardDescription,
+                        { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
+                      ]}
+                      numberOfLines={2}
+                      ellipsizeMode="tail"
+                    >
+                      {idea.description}
+                    </Text>
+                    </View>
                     <Checkbox
                       value={idea.state === 'executed'}
                       onValueChange={(newValue) => handleCheckboxChange(idea, newValue)}
@@ -222,36 +246,36 @@ const Executions = () => {
       </View>
       <Navbar />
       <Modal
-              visible={longPressModalVisible}
-              transparent
-              animationType="slide"
-              onRequestClose={() => setLongPressModalVisible(false)}
-            >
-              <TouchableWithoutFeedback onPress={() => setLongPressModalVisible(false)}>
-                <View style={styles.modalContainer}>
-                  <TouchableWithoutFeedback onPress={() => { /* Prevent modal from closing when clicking inside */ }}>
-                    <View style={[styles.modalContent, { backgroundColor: apptheme === 'dark' ? theme.colors.darker : theme.colors.light }]}>
-                      <Text style={[
-                        styles.modalTitle,
-                        { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
-                      ]}>Change Idea State</Text>
-                      <TouchableOpacity style={styles.button} onPress={() => handleIdeaStateChange('idea')}>
-                        <Text style={[
-                          styles.buttonText,
-                          { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
-                        ]}>Push to Ideas</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity style={styles.button} onPress={() => handleIdeaStateChange('onHold')}>
-                        <Text style={[
-                          styles.buttonText,
-                          { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
-                        ]}>Push to On Hold</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </TouchableWithoutFeedback>
-                </View>
-              </TouchableWithoutFeedback>
-            </Modal>
+        visible={longPressModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setLongPressModalVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setLongPressModalVisible(false)}>
+          <View style={styles.modalContainer}>
+            <TouchableWithoutFeedback onPress={() => { /* Prevent modal from closing when clicking inside */ }}>
+              <View style={[styles.modalContent, { backgroundColor: apptheme === 'dark' ? theme.colors.darker : theme.colors.light }]}>
+                <Text style={[
+                  styles.modalTitle,
+                  { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
+                ]}>Change Idea State</Text>
+                <TouchableOpacity style={styles.button} onPress={() => handleIdeaStateChange('idea')}>
+                  <Text style={[
+                    styles.buttonText,
+                    { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
+                  ]}>Push to Ideas</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={() => handleIdeaStateChange('onHold')}>
+                  <Text style={[
+                    styles.buttonText,
+                    { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
+                  ]}>Push to On Hold</Text>
+                </TouchableOpacity>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </ScreenWrapper>
   );
 };
@@ -262,7 +286,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'space-between',
-    
+
   },
   scrollContainer: {
     padding: 16,
@@ -278,21 +302,22 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: theme.colors.dark,
-    padding: wp(5),
+    padding: wp(4),
     borderRadius: 15,
     marginBottom: hp(2),
   },
   cardTitle: {
     fontSize: 16,
-    fontWeight: theme.fontWeights.medium,
-    color: theme.colors.light,
-    width: '90%',
+    fontFamily: 'Satoshi-Medium'
   },
   executedCardTitle: {
     fontSize: 16,
-    fontWeight: theme.fontWeights.medium,
-    color: 'gray',
-    width: '90%',
+    fontFamily: 'Satoshi-Medium'
+  },
+  cardDescription: {
+    fontSize: 16,
+    paddingTop: 5,
+    fontFamily: 'Satoshi-Regular'
   },
   row: {
     flexDirection: 'row',
@@ -300,9 +325,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: theme.fontWeights.bold,
+    fontSize: 20,
     marginVertical: hp(2),
+    fontFamily: 'Satoshi-Bold'
   },
   showMore: {
     fontSize: 16,
@@ -329,34 +354,32 @@ const styles = StyleSheet.create({
     height: hp(15),
   },
   modalContainer: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    modalContent: {
-      width: '90%',
-      backgroundColor: theme.colors.dark,
-      padding: wp(4),
-      borderRadius: 12,
-    },
-    modalTitle: {
-      fontSize: 18,
-      fontWeight: theme.fontWeights.bold,
-      marginBottom: hp(2),
-      color: 'white',
-    },
-    button: {
-      backgroundColor: 'gray',
-      paddingVertical: 10,
-      paddingHorizontal: 20,
-      borderRadius: 8,
-      alignItems: 'center',
-      marginBottom: 10,
-    },
-    buttonText: {
-  
-      fontSize: 16,
-      fontWeight: theme.fontWeights.medium,
-    },
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: '90%',
+    backgroundColor: theme.colors.dark,
+    padding: wp(4),
+    borderRadius: 12,
+  },
+  modalTitle: {
+    fontSize: 18,
+    marginBottom: hp(2),
+    fontFamily: 'Satoshi-Bold'
+  },
+  button: {
+    backgroundColor: 'gray',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  buttonText: {
+    fontFamily: 'Satoshi-Regular',
+    fontSize: 16,
+  },
 });

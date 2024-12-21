@@ -24,5 +24,6 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-start',
         padding: wp(2),
         borderRadius: '50%',
+        zIndex: 999
     },
 })

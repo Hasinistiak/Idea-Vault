@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
 
     titleText: {
         fontSize: 30,
-        fontWeight: theme.fontWeights.bold,
+        fontFamily: 'Satoshi-Bold',
     color: theme.colors.light,
     },    
 
@@ -152,7 +152,8 @@ const styles = StyleSheet.create({
     loginText: {
         textAlign: 'center',
         color: theme.colors.lightText,
-        fontSize: 18,
-        marginBottom: hp(5)
+        fontSize: 16,
+        marginBottom: hp(5),
+        fontFamily: 'Satoshi-Regular'
     }
 });

@@ -57,7 +57,7 @@ const Navbar = ({ fetchIdeas }) => {
             <View style={[styles.iconContainer, { backgroundColor: isActive(path) ? apptheme === 'light' ? 'rgba(167, 173, 199, 0.5)' : 'rgba(103, 116, 149, 0.5)' : 'transparent' }]}>
                 <Icon
                     name={iconName}
-                    size={hp(3.5)}
+                    size={30}
                     strokeWidth={3}
                     color={theme.colors.text}
                 />
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: hp(1),
         borderRadius: 50,
-        marginHorizontal: 90,
+        marginHorizontal: 70,
     },
     navItem: {
         justifyContent: 'center',
@@ -172,21 +172,20 @@ const styles = StyleSheet.create({
     },
     modalTitle: {
         fontSize: 18,
-        fontWeight: theme.fontWeights.bold,
         marginBottom: hp(2),
-        color: 'white',
+        fontFamily: 'Satoshi-Bold',
     },
     input: {
-        backgroundColor: theme.colors.darker,
         padding: 10,
         borderRadius: 8,
         marginBottom: hp(3),
-        color: theme.colors.secondary,
+        fontFamily: 'Satoshi-Regular',
     },
     descriptionInput: {
         height: hp(20),
         marginBottom: hp(3),
         textAlignVertical: 'top',
+        fontFamily: 'Satoshi-Regular',
     },
     modalActions: {
         flexDirection: 'row',
@@ -214,4 +213,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: hp(1),
     },
+    buttonText: {
+        fontFamily: 'Satoshi-Regular',
+    }
 });

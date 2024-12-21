@@ -24,9 +24,9 @@ const Settings = () => {
     };
 
     return (
-        <ScreenWrapper bg={apptheme === 'dark' ? theme.colors.darker : theme.colors.light}>
+        <ScreenWrapper bg={apptheme === 'dark' ? theme.colors.darker : theme.colors.white}>
         <Header title={'Settings'}/>
-        <View style={[styles.container, { backgroundColor: apptheme === 'light' ? theme.colors.light : theme.colors.darker }]}>
+        <View style={[styles.container, { backgroundColor: apptheme === 'light' ? theme.colors.white : theme.colors.darker }]}>
             
             
             {/* User Details Card */}
@@ -140,14 +140,16 @@ const styles = StyleSheet.create({
     },
     cardTitle: {
         fontSize: 18,
-        fontWeight: 'bold',
+
         marginBottom: 10,
+        fontFamily: 'Satoshi-Bold'
     },
     cardContent: {
         paddingVertical: 10,
     },
     cardText: {
         fontSize: 16,
+        fontFamily: 'Satoshi-Regular'
     },
     logoutButton: {
         backgroundColor: 'rgba(255, 99, 71,0.2)',
@@ -159,7 +161,7 @@ const styles = StyleSheet.create({
     },
     logoutText: {
         color: 'rgba(255, 0, 0,0.7)',
-        fontWeight: 'bold',
         fontSize: 16,
+        fontFamily: 'Satoshi-Bold'
     },
 });

@@ -67,7 +67,7 @@ const onHold = () => {
     }
   };
   return (
-    <ScreenWrapper bg={apptheme === 'dark' ? theme.colors.darker : theme.colors.light}>
+    <ScreenWrapper bg={apptheme === 'dark' ? theme.colors.darker : theme.colors.white}>
       <View style={styles.container}>
         <Animated.View
           style={[
@@ -132,6 +132,16 @@ const onHold = () => {
                 >
                   <View style={[styles.card, { backgroundColor: apptheme === 'light' ? theme.colors.lightCard : theme.colors.dark }]}>
                     <Text style={[styles.cardTitle, { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText }]}>{idea.title}</Text>
+                    <Text
+                      style={[
+                        styles.cardDescription,
+                        { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
+                      ]}
+                      numberOfLines={2}
+                      ellipsizeMode="tail"
+                    >
+                      {idea.description}
+                    </Text>
                   </View>
                 </TouchableOpacity>
               ))}
@@ -200,7 +210,7 @@ const styles = StyleSheet.create({
     marginTop: hp(2)
   },
   card: {
-    padding: wp(5),
+    padding: wp(4),
     borderRadius: 15,
     marginBottom: hp(2),
   },
@@ -213,8 +223,12 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 16,
-    fontWeight: theme.fontWeights.medium,
-    color: theme.colors.light,
+    fontFamily: 'Satoshi-Medium'
+  },
+  cardDescription: {
+    fontSize: 16,
+    paddingTop: 5,
+    fontFamily: 'Satoshi-Regular'
   },
   modalContainer: {
     flex: 1,
@@ -230,12 +244,12 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: theme.fontWeights.bold,
     marginBottom: hp(2),
     color: 'white',
+    fontFamily: 'Satoshi-Bold'
   },
   button: {
-    backgroundColor: 'gray',
+    backgroundColor: 'silver',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
@@ -243,9 +257,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   buttonText: {
-
+    fontFamily: 'Satoshi-Regular',
     fontSize: 16,
-    fontWeight: theme.fontWeights.medium,
+
   },
   centeredContainer: {
     flex: 1,
@@ -256,6 +270,6 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 18,
     color: 'gray',
-    fontWeight: 'bold',
+    fontFamily: 'Satoshi-Bold'
   },
 });

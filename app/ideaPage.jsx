@@ -89,7 +89,7 @@ const IdeaPage = () => {
   };
 
   return (
-    <ScreenWrapper bg={apptheme === 'dark' ? theme.colors.darker : theme.colors.light}>
+    <ScreenWrapper bg={apptheme === 'dark' ? theme.colors.darker : theme.colors.white}>
       <Header ml={wp(4)} mr={wp(4)} position={'absolute'} zIndex={100000} showDeleteIcon={true}onDeletePress={() => setConfirmModalVisible(true)} />
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
 
@@ -173,7 +173,7 @@ const IdeaPage = () => {
               })
             }
           >
-            <Text style={[styles.rankButtonText, { color: apptheme === 'light' ? theme.colors.light : theme.colors.darker }]}>Rank Your Idea?</Text>
+            <Text style={[styles.rankButtonText, { color: theme.colors.darker }]}>Rank Your Idea?</Text>
           </TouchableOpacity>
         )}
 
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     height: 'auto',
     padding: 20,
     textAlignVertical: 'top',
-    marginBottom: 40
+    marginBottom: 40,
   },
   descriptionCard: {
     padding: 20,
@@ -269,15 +269,15 @@ const styles = StyleSheet.create({
     marginBottom: 40
   },
   label: {
-    fontSize: 16,
-    fontWeight: theme.fontWeights.bold,
-    color: theme.colors.light,
+    fontSize: 20,
     marginBottom: hp(1),
+    fontFamily: 'Satoshi-Bold',
   },
   cardContent: {
     fontSize: 18,
     color: theme.colors.secondary,
     height: 'auto',
+    fontFamily: 'Satoshi-Regular',
   },
   saveButton: {
     padding: wp(4),
@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 14,
     color: theme.colors.darker,
-    fontWeight: theme.fontWeights.bold,
+    fontFamily: 'Satoshi-Medium',
   },
   rankButton: {
     backgroundColor: theme.colors.Button2,
@@ -297,9 +297,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   rankButtonText: {
-    color: theme.colors.black,
-    fontWeight: theme.fontWeights.bold,
     fontSize: 17,
+    fontFamily: 'Satoshi-Medium',
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -331,7 +330,7 @@ const styles = StyleSheet.create({
   },
   scoreText: {
     fontSize: 20,
-    fontWeight: theme.fontWeights.bold,
+    fontFamily: 'Satoshi-Bold',
   },
   modalContainer: {
     flex: 1,
@@ -340,51 +339,51 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    width: wp(80),
+    width: wp(90),
     backgroundColor: theme.colors.light,
-    padding: 20,
+    padding: 10,
     borderRadius: 12,
     alignItems: 'center',
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
     marginBottom: 20,
+    fontFamily: 'Satoshi-Bold',
   },
   modalButtonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     width: '100%',
   },
   button: {
-    paddingVertical: hp(2),
+    paddingVertical: hp(1.5),
     paddingHorizontal: wp(5),
     borderRadius: 8,
     backgroundColor: 'silver',
   },
   removeButton: {
-    paddingVertical: hp(2),
+    paddingVertical: hp(1.5),
     paddingHorizontal: wp(5),
     borderRadius: 8,
-    backgroundColor: theme.colors.Button2,
+    backgroundColor: 'rgba(255, 99, 71,0.2)',
   },
   removeButtonText: {
-    color: theme.colors.darker,
-    fontWeight: 'bold',
+    color: 'rgba(255, 0, 0,0.7)',
+    fontFamily: 'Satoshi-Medium',
   },
 
   arrowleft: {
-    position: 'absolute', // Make the arrow fixed in its position
-    right: wp(0), // Adjust the left position to your preference
-    top: hp(2), // Position the arrow at the top
+    position: 'absolute', 
+    right: wp(0),
+    top: hp(2),
     padding: wp(2),
     borderRadius: '50%',
   },
   arrowAndButtonsContainer: {
     flexDirection: 'row',
-    alignItems: 'center', // Align the items vertically in the center
-    justifyContent: 'flex-end', // Align the buttons to the right end
-    gap: wp(4), // Space between the arrow and the buttons
-    marginTop: hp(2), // Space above the container
+    alignItems: 'center', 
+    justifyContent: 'flex-end', 
+    gap: wp(4),
+    marginTop: hp(2), 
   },
 });

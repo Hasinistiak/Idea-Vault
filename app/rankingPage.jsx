@@ -77,9 +77,9 @@ const RankingPage = () => {
   };
 
   return (
-    <ScreenWrapper bg={apptheme === 'dark' ? theme.colors.darker : theme.colors.light}>
+    <ScreenWrapper bg={apptheme === 'dark' ? theme.colors.darker : theme.colors.white}>
       <Header ml={wp(3)} />
-      <ScrollView showsVerticalScrollIndicator={false} style={[styles.container, { backgroundColor: apptheme === 'dark' ? theme.colors.darker : theme.colors.light }]}>
+      <ScrollView showsVerticalScrollIndicator={false} style={[styles.container, { backgroundColor: apptheme === 'dark' ? theme.colors.darker : theme.colors.white }]}>
 
         <View style={[styles.card, { backgroundColor: apptheme === 'light' ? theme.colors.lightCard : theme.colors.dark }]}>
           {/* Average Score */}
@@ -100,7 +100,7 @@ const RankingPage = () => {
               <TouchableOpacity onPress={() => updateValue(feasibility, setFeasibility, -1)}>
                 <Ionicons name="chevron-back" size={32} color= { apptheme === 'light' ? theme.colors.darker : theme.colors.light} />
               </TouchableOpacity>
-              <Text style={[styles.value, {color: apptheme === 'dark' ? theme.colors.secondary : theme.colors.darker}]}>{formatValue(feasibility)}</Text>
+              <Text style={[styles.value, {color: apptheme === 'dark' ? theme.colors.light : theme.colors.darker}]}>{formatValue(feasibility)}</Text>
               <TouchableOpacity onPress={() => updateValue(feasibility, setFeasibility, 1)}>
                 <Ionicons name="chevron-forward" size={32} color= { apptheme === 'light' ? theme.colors.darker : theme.colors.light} />
               </TouchableOpacity>
@@ -114,7 +114,7 @@ const RankingPage = () => {
               <TouchableOpacity onPress={() => updateValue(impact, setImpact, -1)}>
                 <Ionicons name="chevron-back" size={32} color= { apptheme === 'light' ? theme.colors.darker : theme.colors.light} />
               </TouchableOpacity>
-              <Text style={[styles.value, {color: apptheme === 'dark' ? theme.colors.secondary : theme.colors.darker}]}>{formatValue(impact)}</Text>
+              <Text style={[styles.value, {color: apptheme === 'dark' ? theme.colors.light : theme.colors.darker}]}>{formatValue(impact)}</Text>
               <TouchableOpacity onPress={() => updateValue(impact, setImpact, 1)}>
                 <Ionicons name="chevron-forward" size={32} color= { apptheme === 'light' ? theme.colors.darker : theme.colors.light} />
               </TouchableOpacity>
@@ -128,7 +128,7 @@ const RankingPage = () => {
               <TouchableOpacity onPress={() => updateValue(scalability, setScalability, -1)}>
                 <Ionicons name="chevron-back" size={32} color= { apptheme === 'light' ? theme.colors.darker : theme.colors.light}/>
               </TouchableOpacity>
-              <Text style={[styles.value, {color: apptheme === 'dark' ? theme.colors.secondary : theme.colors.darker}]}>{formatValue(scalability)}</Text>
+              <Text style={[styles.value, {color: apptheme === 'dark' ? theme.colors.light : theme.colors.darker}]}>{formatValue(scalability)}</Text>
               <TouchableOpacity onPress={() => updateValue(scalability, setScalability, 1)}>
                 <Ionicons name="chevron-forward" size={32} color= { apptheme === 'light' ? theme.colors.darker : theme.colors.light}/>
               </TouchableOpacity>
@@ -142,7 +142,7 @@ const RankingPage = () => {
               <TouchableOpacity onPress={() => updateValue(excitement, setExcitement, -1)}>
                 <Ionicons name="chevron-back" size={32} color= { apptheme === 'light' ? theme.colors.darker : theme.colors.light} />
               </TouchableOpacity>
-              <Text style={[styles.value, {color: apptheme === 'dark' ? theme.colors.secondary : theme.colors.darker}]}>{formatValue(excitement)}</Text>
+              <Text style={[styles.value, {color: apptheme === 'dark' ? theme.colors.light : theme.colors.darker}]}>{formatValue(excitement)}</Text>
               <TouchableOpacity onPress={() => updateValue(excitement, setExcitement, 1)}>
                 <Ionicons name="chevron-forward" size={32} color= { apptheme === 'light' ? theme.colors.darker : theme.colors.light}/>
               </TouchableOpacity>
@@ -182,8 +182,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 20,
-    fontWeight: theme.fontWeights.medium,
-    color: theme.colors.secondary,
+    fontFamily: 'Satoshi-Bold'
   },
   selector: {
     flexDirection: 'row',
@@ -191,22 +190,20 @@ const styles = StyleSheet.create({
   },
   value: {
     fontSize: 30,
-    fontWeight: 'bold',
     marginHorizontal: wp(2),
+    fontFamily: 'Satoshi-Bold'
   },
   averageContainer: {
-    marginTop: hp(0),
     alignItems: 'center',
   },
   averageLabel: {
     fontSize: 22,
-    fontWeight: theme.fontWeights.medium,
-    color: theme.colors.secondary,
+    fontFamily: 'Satoshi-Bold'
+
   },
   averageValue: {
     fontSize: 35,
-    fontWeight: 'bold',
-    color: theme.colors.secondary,
+    fontFamily: 'Satoshi-Bold'
   },
   rankButton: {
     backgroundColor: theme.colors.Button2,
@@ -217,8 +214,7 @@ const styles = StyleSheet.create({
     marginBottom: hp(10),
   },
   buttonText: {
-    color: 'black',
-    fontWeight: theme.fontWeights.bold,
+    fontFamily: 'Satoshi-Medium',
     fontSize: 17,
   },
   card: {

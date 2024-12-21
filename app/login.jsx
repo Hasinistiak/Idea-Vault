@@ -101,12 +101,13 @@ const styles = StyleSheet.create({
         flex: 1,
         gap: 45,
         paddingHorizontal: wp(5),
-        paddingVertical: hp(7)
+        paddingVertical: hp(7),
+        marginBottom: 500
     },
 
     titleText: {
         fontSize: 30,
-        fontWeight: theme.fontWeights.bold,
+        fontFamily: 'Satoshi-Bold',
         color: theme.colors.lightText,
     },
 
@@ -116,7 +117,7 @@ const styles = StyleSheet.create({
 
     forgotPassword: {
         textAlign: "right",
-        fontWeight: theme.fontWeights.bolder,
+        fontFamily: 'Satoshi-Bold',
         color: theme.colors.lightText,
     },
     signup:{
@@ -129,6 +130,7 @@ const styles = StyleSheet.create({
     signupText: {
         textAlign: 'center',
         color: theme.colors.lightText,
-        fontSize: 18
+        fontFamily: 'Satoshi-Regular',
+        fontSize: 16
     }
 })

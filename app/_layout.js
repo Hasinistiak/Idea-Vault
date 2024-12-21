@@ -52,11 +52,11 @@ const MainLayout = () => {
       screenOptions={{
         headerShown: false,
         gestureEnabled: true,
-        animation: 'slide_from_right', // Apply animation for non-tab screens
+        animation: 'slide_from_right', 
         gestureDirection: 'horizontal',
       }}
     >
-      <Slot /> {/* This will load the current screen for the app */}
+      <Slot /> 
     </Stack>
   );
 };

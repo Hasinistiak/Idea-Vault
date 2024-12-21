@@ -10,7 +10,7 @@ const Input = (props) => {
             props.icon && props.icon
         }
       <TextInput
-         style={{flex: 1, color: theme.colors.light}}
+         style={{flex: 1, color: theme.colors.light, fontFamily: 'Satoshi-Regular'}}
          placeholderTextColor={theme.colors.light}
          ref={props.inputRef && props.inputRef}
          {...props}
@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
         alignItems:'center',
         justifyContent: 'center',
         backgroundColor: theme.colors.dark,
-        borderRadius: theme.radius.md,
+        borderRadius: 30,
         borderCurve: 'continuous',
         paddingHorizontal: 12,
         gap: 12,

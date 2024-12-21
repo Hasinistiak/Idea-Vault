@@ -63,8 +63,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 25,
     top: 10,
-    fontWeight: theme.fontWeights.bold,
-    color: theme.colors.light,
+    fontFamily: 'Satoshi-Bold'
   },
   backButton: {
     position: 'absolute',

@@ -6,12 +6,8 @@ import {
   TouchableWithoutFeedback,
   Animated,
   Modal,
-  TextInput,
-  Button,
   Alert,
-  Keyboard,
   Pressable,
-  TouchableNativeFeedback,
   TouchableOpacity,
 } from 'react-native';
 import React, { useCallback, useRef, useState } from 'react';
@@ -20,10 +16,9 @@ import theme from '../../constants/theme';
 import Navbar from '../../components/Navbar';
 import Header from '../../components/Header';
 import { hp, wp } from '../../helpers/common';
-import Icon from '../../assets/icons';
 import { useAuth } from '../../contexts/AuthContext';
-import { CreateIdea, fetchUserIdeas, UpdateIdea } from '../../services/ideaService';
-import { router, useFocusEffect, useRouter } from 'expo-router';
+import { fetchUserIdeas, UpdateIdea } from '../../services/ideaService';
+import { useFocusEffect, useRouter } from 'expo-router';
 import Loading from '../../components/Loading';
 import { useTheme } from '../../contexts/ThemeContext';
 
@@ -33,7 +28,7 @@ const Home = () => {
   const [ideas, setIdeas] = useState([]);
   const [longPressModalVisible, setLongPressModalVisible] = useState(false);
   const [selectedIdea, setSelectedIdea] = useState(null);
-  const route = useRouter();
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const { theme: apptheme } = useTheme();
 
@@ -83,7 +78,7 @@ const Home = () => {
   const unrankedIdeas = ideas.filter((idea) => !idea.ranked);
 
   return (
-    <ScreenWrapper bg={apptheme === 'dark' ? theme.colors.darker : theme.colors.light}>
+    <ScreenWrapper bg={apptheme === 'dark' ? theme.colors.darker : theme.colors.white}>
       <View style={styles.container}>
         {/* Header with Scroll Animation */}
         <Animated.View
@@ -135,9 +130,10 @@ const Home = () => {
                 <Text
                   style={[
                     styles.sectionTitle,
-                    { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText,
-                      marginTop: hp(10)
-                     },
+                    {
+                      color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText,
+                      marginTop: hp(10),
+                    },
                   ]}
                 >
                   Ranked Ideas
@@ -177,14 +173,26 @@ const Home = () => {
                         ]}
                       >
                         <View style={styles.cardDetails}>
-                          <Text
-                            style={[
-                              styles.cardTitle,
-                              { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
-                            ]}
-                          >
-                            {idea.title}
-                          </Text>
+                          <View style={{width: '90%'}}>
+                            <Text
+                              style={[
+                                styles.cardTitle,
+                                { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
+                              ]}
+                            >
+                              {idea.title}
+                            </Text>
+                            <Text
+                              style={[
+                                styles.cardDescription,
+                                { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
+                              ]}
+                              numberOfLines={2}
+                              ellipsizeMode="tail"
+                            >
+                              {idea.description}
+                            </Text>
+                          </View>
                           <Text
                             style={[
                               styles.cardScore,
@@ -240,6 +248,16 @@ const Home = () => {
                         ]}
                       >
                         {idea.title}
+                      </Text>
+                      <Text
+                        style={[
+                          styles.cardDescription,
+                          { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
+                        ]}
+                        numberOfLines={2}
+                        ellipsizeMode="tail"
+                      >
+                        {idea.description}
                       </Text>
                     </View>
                   </TouchableOpacity>
@@ -316,15 +334,16 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: theme.fontWeights.bold,
+    fontSize: 20,
     marginBottom: hp(2),
     color: theme.colors.light,
+    fontFamily: 'Satoshi-Bold'
   },
   card: {
     padding: wp(4),
     borderRadius: 15,
     marginBottom: hp(2),
+    
   },
   rankedCard: {
     padding: wp(4),
@@ -334,28 +353,33 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 16,
-    fontWeight: theme.fontWeights.medium,
-    color: theme.colors.secondary,
+    fontFamily: 'Satoshi-Medium'
+  },
+  cardDescription: {
+    fontSize: 16,
+    paddingTop: 5,
+    fontFamily: 'Satoshi-Regular'
   },
   cardScore: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: theme.fontWeights.medium,
-    color: theme.colors.secondary,
+
+    fontFamily: 'Satoshi-Regular'
   },
   cardRank: {
     fontSize: 20,
-    fontWeight: theme.fontWeights.bold,
-    color: theme.colors.secondary,
+
     position: 'absolute',
     top: wp(3),
     left: wp(1),
+    fontFamily: 'Satoshi-Bold'
   },
   cardDetails: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   Holdbutton: {
-    backgroundColor: 'gray',
+    backgroundColor: 'silver',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
@@ -372,7 +396,7 @@ const styles = StyleSheet.create({
   longpressButtonText: {
     color: theme.colors.darker,
     fontSize: 16,
-    fontWeight: theme.fontWeights.bold,
+    fontFamily: 'Satoshi-Regular'
   },
   modalContainer: {
     flex: 1,
@@ -388,8 +412,8 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: theme.fontWeights.bold,
     marginBottom: hp(2),
+    fontFamily: 'Satoshi-Bold'
 
   },
   centeredContainer: {
@@ -401,6 +425,6 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 18,
     color: 'gray',
-    fontWeight: 'bold',
+    fontFamily: 'Satoshi-Bold'
   },
 });
