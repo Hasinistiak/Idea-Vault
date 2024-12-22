@@ -17,7 +17,7 @@ const welcome = () => {
 
         {/* title */}
         <View style={{gap: 20}}>
-            <Text style={styles.title}>Idea Vault</Text>
+            <Text style={styles.title}>Innvent</Text>
             <Text style={styles.subTitle}>
             So you never lose your next million-dollar idea.
             </Text>
