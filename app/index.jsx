@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { useFonts } from 'expo-font'; // Import useFonts hook
 import Loading from '../components/Loading';
 import { useTheme } from '../contexts/ThemeContext';
+import theme from '../constants/theme';
 
 const Index = () => {
   const router = useRouter();
@@ -19,9 +20,9 @@ const Index = () => {
   if (!fontsLoaded) {
     // Show a loading indicator until fonts are loaded
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center',backgroundColor: apptheme === 'light' ? theme.colors.lightCard : theme.colors.dark }}>
+      <Loading />
+    </View>
     );
   }
 

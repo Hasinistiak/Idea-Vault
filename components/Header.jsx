@@ -29,15 +29,15 @@ const Header = ({ title, showBackButton = true, mb = 10, ml = 10, mr = 0, showDe
       )}
 
       {showProfileIcon && (
-        <TouchableOpacity onPress={() => router.push('settings')} style={[styles.profileIcon, {backgroundColor :apptheme === 'light' ? 'rgba(125, 139, 174, 0.5)' : theme.colors.Button2}]}>
+        <TouchableOpacity onPress={() => router.push('settings')} style={[styles.profileIcon, {backgroundColor :apptheme === 'light' ? theme.colors.lightCard : theme.colors.Button2}]}>
           {/*<Avatar uri={user?.image} size={hp(3.8)} />*/}
-          <Icon name={'user'} size={25} color={theme.colors.text} />
+          <Icon name={'user'} size={25} color={theme.colors.dark} />
         </TouchableOpacity>
       )}
 
       {showSearchIcon && (
-        <TouchableOpacity onPress={() => router.push('searchPage')} style={[styles.searchIcon, {backgroundColor :apptheme === 'light' ? 'rgba(125, 139, 174, 0.5)' : theme.colors.Button2}]}>
-          <Icon name={'search'} size={25} color={theme.colors.text }  />
+        <TouchableOpacity onPress={() => router.push('searchPage')} style={[styles.searchIcon, {backgroundColor :apptheme === 'light' ? theme.colors.lightCard : theme.colors.Button2}]}>
+          <Icon name={'search'} size={25} color={theme.colors.dark }  />
         </TouchableOpacity>
       )}
 

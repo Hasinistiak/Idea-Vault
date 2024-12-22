@@ -54,12 +54,12 @@ const Navbar = ({ fetchIdeas }) => {
             onPress={() => !isActive(path) && router.push(path)}
             disabled={isActive(path)} // Disable button if active
         >
-            <View style={[styles.iconContainer, { backgroundColor: isActive(path) ? apptheme === 'light' ? 'rgba(167, 173, 199, 0.5)' : 'rgba(103, 116, 149, 0.5)' : 'transparent' }]}>
+            <View style={[styles.iconContainer, { backgroundColor: isActive(path) ? apptheme === 'light' ? theme.colors.lightCard : theme.colors.dark : 'transparent' }]}>
                 <Icon
                     name={iconName}
                     size={30}
                     strokeWidth={3}
-                    color={theme.colors.text}
+                    color={apptheme === 'light' ? theme.colors.text : theme.colors.lightText}
                 />
             </View>
         </TouchableOpacity>
@@ -67,12 +67,12 @@ const Navbar = ({ fetchIdeas }) => {
 
     return (
         <>
-            <View style={[styles.navbar, { backgroundColor: theme.colors.Button2 }]}>
+            <View style={[styles.navbar, { backgroundColor:apptheme === 'light' ? theme.colors.light : '#2A2A2A' }]}>
                 {renderNavItem('onHold', 'pause')}
                 {renderNavItem('home', 'idea')}
                 {renderNavItem('executions', 'rocket')}
             </View>
-            <TouchableOpacity onPress={() => setModalVisible(true)} style={[styles.addButton, {backgroundColor: apptheme ===  'light' ? '#A7ADC7' : theme.colors.Button}]}>
+            <TouchableOpacity onPress={() => setModalVisible(true)} style={[styles.addButton, {backgroundColor: apptheme ===  'light' ? '#A7ADC7' : theme.colors.Button2}]}>
                 <Icon name="add" size={35} color={theme.colors.text} />
             </TouchableOpacity>
 
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: hp(1),
         borderRadius: 50,
-        marginHorizontal: 70,
+        marginHorizontal: 90,
     },
     navItem: {
         justifyContent: 'center',
