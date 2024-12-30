@@ -1,71 +1,54 @@
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Alert, Modal, TouchableWithoutFeedback } from 'react-native';
-import React, { useCallback, useRef, useState } from 'react';
-import ScreenWrapper from '../../components/ScreenWrapper';
-import theme from '../../constants/theme';
-import Navbar from '../../components/Navbar';
-import Header from '../../components/Header';
-import { fetchUserExecutions, fetchUserExecuted, UpdateIdea } from '../../services/ideaService';
-import { useFocusEffect, useRouter } from 'expo-router';
-import { hp, wp } from '../../helpers/common';
-import { useAuth } from '../../contexts/AuthContext';
-import Checkbox from 'expo-checkbox'; // Add checkbox import
-import Loading from '../../components/Loading';
-import { useTheme } from '../../contexts/ThemeContext';
-import { Animated } from 'react-native';
+import { Animated, Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import ScreenWrapper from '../../components/ScreenWrapper'
+import theme from '../../constants/theme'
+import Navbar from '../../components/Navbar'
+import Header from '../../components/Header'
+import { useAuth } from '../../contexts/AuthContext'
+import { useFocusEffect, useRouter } from 'expo-router'
+import { fetchUserDoLaters, fetchUserExecutions, fetchUserOnHolds, UpdateIdea } from '../../services/ideaService'
+import { hp, wp } from '../../helpers/common'
+import { ScrollView } from 'react-native-gesture-handler'
+import Loading from '../../components/Loading'
+import { useTheme } from '../../contexts/ThemeContext'
+import { fetchIdeaTags } from '../../services/tagService'
+
 
 const Executions = () => {
   const [ideas, setIdeas] = useState([]);
-  const [executedIdeas, setExecutedIdeas] = useState([]);
-  const [showMoreExecuted, setShowMoreExecuted] = useState(2);
-  const { user } = useAuth();
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(true);
-  const { theme: apptheme } = useTheme();
-  const [longPressModalVisible, setLongPressModalVisible] = useState(false);
+  const { user } = useAuth()
   const [selectedIdea, setSelectedIdea] = useState(null);
+  const [longPressModalVisible, setLongPressModalVisible] = useState(false);
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const { theme: apptheme } = useTheme();
+  const [tags, setTags] = useState({});
 
   const scrollY = useRef(new Animated.Value(0)).current;
 
   const fetchExecutions = async () => {
-    setIsLoading(true);
-    const userId = user?.id;
-    const result = await fetchUserExecutions(userId);
-    if (result.success) {
-      setIdeas(result.data);
-    } else {
-      Alert.alert('Error', 'Failed to fetch ideas.');
+    setLoading(true); // Start loading
+    try {
+      const userId = user?.id;
+      const result = await fetchUserExecutions(userId);
+      if (result.success) {
+        setIdeas(result.data);
+      } else {
+        Alert.alert('Error', 'Failed to fetch ideas.');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Something went wrong.');
+    } finally {
+      setLoading(false); // End loading
     }
-    setIsLoading(false);
   };
 
-  const fetchExecuted = async () => {
-    const userId = user?.id;
-    const result = await fetchUserExecuted(userId);
-    if (result.success) {
-      setExecutedIdeas(result.data);
-    } else {
-      Alert.alert('Error', 'Failed to fetch executed ideas.');
-    }
-  };
 
   useFocusEffect(
     useCallback(() => {
       fetchExecutions();
-      fetchExecuted();
     }, [])
   );
-
-  const handleCheckboxChange = async (idea, isChecked) => {
-    const updatedFields = { state: isChecked ? 'executed' : 'execution' };
-    const res = await UpdateIdea(user.id, updatedFields, idea.id);
-
-    if (res.success) {
-      await fetchExecutions();
-      await fetchExecuted();
-    } else {
-      Alert.alert('Error', 'Failed to update idea state.');
-    }
-  };
 
   const handleLongPress = (idea) => {
     setSelectedIdea(idea);
@@ -86,11 +69,26 @@ const Executions = () => {
     }
   };
 
+  const fetchTags = async (ideaId) => {
+    const result = await fetchIdeaTags(ideaId);
+    if (result.success) {
+      setTags((prevTags) => ({
+        ...prevTags,
+        [ideaId]: result.data, // Store tags by idea ID
+      }));
+    }
+  };
+
+  useEffect(() => {
+
+    ideas.forEach((idea) => {
+      fetchTags(idea.id);
+    });
+  }, [ideas]);
 
   return (
     <ScreenWrapper bg={apptheme === 'dark' ? theme.colors.darker : theme.colors.white}>
       <View style={styles.container}>
-
         <Animated.View
           style={[
             styles.header,
@@ -120,42 +118,37 @@ const Executions = () => {
             showSearchIcon={true}
           />
         </Animated.View>
-
-        {isLoading ? (
+        {loading ? (
           <View style={styles.centeredContainer}>
             <Loading />
           </View>
         ) : (
-          <ScrollView
-            contentContainerStyle={styles.scrollContainer}
-            showsVerticalScrollIndicator={false}
-            onScroll={Animated.event(
-              [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-              { useNativeDriver: false }
-            )}
-          >
-            {/* First Section: Executions */}
-            {ideas.map((idea) => (
-              <TouchableOpacity
-                key={idea.id}
-                onPress={() =>
-                  router.push({
-                    pathname: 'ideaPage',
-                    params: {
-                      ideaId: idea.id,
-                      ideaTitle: idea.title,
-                      ideaDescription: idea.description,
-                      ideaRanked: idea.ranked,
-                      ideaState: idea.state,
-                      ideaScore: idea.score,
-                    },
-                  })
-                }
-                onLongPress={() => handleLongPress(idea)}
-              >
-                <View style={[styles.card, { backgroundColor: apptheme === 'light' ? theme.colors.lightCard : theme.colors.dark }]}>
-                  <View style={styles.row}>
-                    <View style={{width: '90%'}}>
+          <>
+            <ScrollView
+              contentContainerStyle={styles.scrollContainer}
+              showsVerticalScrollIndicator={false}
+              onScroll={Animated.event(
+                [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                { useNativeDriver: false }  // Set to false for debugging
+              )}
+            >
+              {ideas.map((idea) => (
+                <TouchableOpacity
+                  key={idea.id}
+                  onPress={() =>
+                    router.push({
+                      pathname: 'ideaPage',
+                      params: {
+                        ideaId: idea.id,
+                        ideaTitle: idea.title,
+                        ideaDescription: idea.description,
+                        ideaState: idea.state,
+                      },
+                    })
+                  }
+                  onLongPress={() => handleLongPress(idea)}
+                >
+                  <View style={[styles.card, { backgroundColor: apptheme === 'light' ? theme.colors.lightCard : theme.colors.dark }]}>
                     <Text style={[styles.cardTitle, { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText }]}>{idea.title}</Text>
                     <Text
                       style={[
@@ -167,84 +160,49 @@ const Executions = () => {
                     >
                       {idea.description}
                     </Text>
+                    <View style={styles.tagContainer}>
+                      {/* Render tags for the idea */}
+                      {tags[idea.id]?.map((tag, index) => (
+                        <Text key={index} style={{
+                          ...styles.tag,
+                          backgroundColor:
+                            tag.tags.color === 'red'
+                              ? theme.colors.red
+                              : tag.tags.color === 'blue'
+                                ? theme.colors.blue
+                                : tag.tags.color === 'green'
+                                  ? theme.colors.green
+                                  : tag.tags.color === 'yellow'
+                                    ? theme.colors.yellow
+                                    : apptheme === 'light'
+                                      ? theme.colors.light
+                                      : theme.colors.card,
+                          color:
+                            apptheme === 'light' ? theme.colors.darker : theme.colors.light
+                        }}>
+                          {tag.tags.name}
+                        </Text>
+                      ))}
                     </View>
-                    <Checkbox
-                      value={idea.state === 'executed'}
-                      onValueChange={(newValue) => handleCheckboxChange(idea, newValue)}
-                      color={theme.colors.Button2}
-                      style={styles.checkbox}
-                    />
                   </View>
-                </View>
-              </TouchableOpacity>
-            ))}
+                </TouchableOpacity>
+              ))}
 
-            {ideas.length === 0 && (
-              <View style={styles.centeredContainer}>
-                <Text style={styles.emptyText}>Nothing Here</Text>
-              </View>
-            )}
-
-            {/* Second Section: Executed */}
-            {executedIdeas.length > 0 && (
-              <Text style={[styles.sectionTitle, { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText, marginTop: hp(24) }]}>Executed</Text>
-            )}
-
-            {executedIdeas.slice(0, showMoreExecuted).map((idea) => (
-              <TouchableOpacity
-                key={idea.id}
-                onPress={() =>
-                  router.push({
-                    pathname: 'ideaPage',
-                    params: {
-                      ideaId: idea.id,
-                      ideaTitle: idea.title,
-                      ideaDescription: idea.description,
-                      ideaRanked: idea.ranked,
-                      ideaState: idea.state,
-                      ideaScore: idea.score,
-                    },
-                  })
-                }
-              >
-                <View style={[styles.card, { backgroundColor: apptheme === 'light' ? theme.colors.lightCard : theme.colors.dark, }]}>
-                  <View style={styles.row}>
-                  <View style={{width: '90%'}}>
-                    <Text style={[styles.executedCardTitle, { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText }]}>{idea.title}</Text>
-                    <Text
-                      style={[
-                        styles.cardDescription,
-                        { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
-                      ]}
-                      numberOfLines={2}
-                      ellipsizeMode="tail"
-                    >
-                      {idea.description}
-                    </Text>
-                    </View>
-                    <Checkbox
-                      value={idea.state === 'executed'}
-                      onValueChange={(newValue) => handleCheckboxChange(idea, newValue)}
-                      color={theme.colors.Button2}
-                      style={styles.checkbox}
-                    />
+              {
+                ideas.length === 0 && (
+                  <View style={styles.centeredContainer}>
+                    <Text style={styles.emptyText}>Nothing Here</Text>
                   </View>
-                </View>
-              </TouchableOpacity>
-            ))}
+                )
+              }
 
-            {executedIdeas.length > showMoreExecuted && (
-              <TouchableOpacity onPress={() => setShowMoreExecuted(showMoreExecuted + 2)}>
-                <Text style={styles.showMore}>Show More</Text>
-              </TouchableOpacity>
-            )}
 
-            {/* Add extra padding to the bottom to ensure content isn't hidden behind the navbar */}
-            <View style={styles.bottomPadding}></View>
-          </ScrollView>
+            </ScrollView>
+          </>
         )}
       </View>
       <Navbar />
+
       <Modal
         visible={longPressModalVisible}
         transparent
@@ -257,25 +215,26 @@ const Executions = () => {
               <View style={[styles.modalContent, { backgroundColor: apptheme === 'dark' ? theme.colors.darker : theme.colors.light }]}>
                 <Text style={[
                   styles.modalTitle,
-                  { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
+                  { color: theme.colors.text },
                 ]}>Change Idea State</Text>
                 <TouchableOpacity style={styles.button} onPress={() => handleIdeaStateChange('idea')}>
                   <Text style={[
                     styles.buttonText,
-                    { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
+                    { color: theme.colors.text },
                   ]}>Push to Ideas</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={() => handleIdeaStateChange('onHold')}>
+                <TouchableOpacity style={styles.button} onPress={() => handleIdeaStateChange('doLater')}>
                   <Text style={[
                     styles.buttonText,
-                    { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
-                  ]}>Push to On Hold</Text>
+                    { color: theme.colors.text },
+                  ]}>Push to Do Later</Text>
                 </TouchableOpacity>
               </View>
             </TouchableWithoutFeedback>
           </View>
         </TouchableWithoutFeedback>
       </Modal>
+
     </ScreenWrapper>
   );
 };
@@ -286,12 +245,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'space-between',
-
   },
   scrollContainer: {
     padding: 16,
     paddingTop: hp(12),
-    marginTop: hp(2),
+    marginTop: hp(2)
+  },
+  card: {
+    padding: wp(4),
+    borderRadius: 15,
+    marginBottom: hp(2),
   },
   header: {
     position: 'absolute',
@@ -300,17 +263,7 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 1,
   },
-  card: {
-    backgroundColor: theme.colors.dark,
-    padding: wp(4),
-    borderRadius: 15,
-    marginBottom: hp(2),
-  },
   cardTitle: {
-    fontSize: 16,
-    fontFamily: 'Satoshi-Medium'
-  },
-  executedCardTitle: {
     fontSize: 16,
     fontFamily: 'Satoshi-Medium'
   },
@@ -318,40 +271,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingTop: 5,
     fontFamily: 'Satoshi-Regular'
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  sectionTitle: {
-    fontSize: 20,
-    marginVertical: hp(2),
-    fontFamily: 'Satoshi-Bold'
-  },
-  showMore: {
-    fontSize: 16,
-    color: theme.colors.Button2,
-    textAlign: 'center',
-    marginVertical: hp(2),
-  },
-  centeredContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyText: {
-    fontSize: 18,
-    color: 'gray',
-    fontWeight: 'bold',
-  },
-  checkbox: {
-    width: 23,
-    height: 23,
-    borderRadius: 12,
-  },
-  bottomPadding: {
-    height: hp(15),
   },
   modalContainer: {
     flex: 1,
@@ -368,18 +287,45 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     marginBottom: hp(2),
+    color: 'white',
     fontFamily: 'Satoshi-Bold'
   },
   button: {
-    backgroundColor: 'gray',
-    paddingVertical: 10,
+    backgroundColor: 'silver',
+    paddingVertical: 15,
     paddingHorizontal: 20,
     borderRadius: 8,
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: hp(1),
   },
   buttonText: {
-    fontFamily: 'Satoshi-Regular',
+    fontFamily: 'Satoshi-Medium',
     fontSize: 16,
+
+  },
+  centeredContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: hp(30)
+  },
+  emptyText: {
+    fontSize: 18,
+    color: 'gray',
+    fontFamily: 'Satoshi-Bold'
+  },
+  tagContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: hp(1),
+  },
+  tag: {
+    backgroundColor: theme.colors.darker,
+    borderRadius: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    marginRight: 8,
+    fontSize: 12,
+    fontFamily: 'Satoshi-Regular',
   },
 });

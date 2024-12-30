@@ -11,8 +11,12 @@ export const theme = {
     Button2: "#7d8bae",
     Button: "#677495",
     card: "rgba(255,255,255, 0.1)",
-    lightCard: 'rgba(167, 173, 199, 0.5)',
+    lightCard:  '#F0F3FA',
     lightText: "#D3D3D3",
+    red: 'rgba(201, 41, 41, 0.42)',
+    blue: 'rgba(34, 101, 226, 0.23)',
+    green: 'rgba(46, 170, 100, 0.26)',
+    yellow: 'rgba(230, 214, 69, 0.34)',
   },
   fonts: {
     primary: "'Roboto', sans-serif", 

@@ -7,7 +7,7 @@ import BackButton from './BackButton';
 import Icon from '../assets/icons';
 import { useTheme } from '../contexts/ThemeContext';
 
-const Header = ({ title, showBackButton = true, mb = 10, ml = 10, mr = 0, showDeleteIcon = false, onDeletePress, showProfileIcon = false, showSearchIcon = false, position, zIndex, mt =25 }) => {
+const Header = ({ title, showBackButton = true, mb = 10, ml = 10, mr = 0, showDeleteIcon = false, onDeletePress, showProfileIcon = false, showSearchIcon = false, position, zIndex, mt =25, onTitlePress}) => {
   const router = useRouter();
 
   const { theme: apptheme } = useTheme();
@@ -20,7 +20,7 @@ const Header = ({ title, showBackButton = true, mb = 10, ml = 10, mr = 0, showDe
         </View>
       )}
 
-      <Text style={[styles.title, {color : apptheme === 'light' ? theme.colors.text : theme.colors.lightText}]}>{title || ''}</Text>
+      <Text style={[styles.title, {color : apptheme === 'light' ? theme.colors.text : theme.colors.lightText}]} onPress={onTitlePress}>{title || ''}</Text>
 
       {showDeleteIcon && (
         <TouchableOpacity style={styles.deleteIcon} onPress={onDeletePress}>

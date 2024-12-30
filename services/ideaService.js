@@ -93,13 +93,13 @@ export const CreateIdea = async (idea) => {
     }
   };
 
-  export const fetchUserOnHolds = async (userId) => {
+  export const fetchUserDoLaters = async (userId) => {
     try {
       const { data, error } = await supabase
         .from('ideas')
         .select('*')
         .eq('userId', userId)
-        .eq('state', 'onHold')
+        .eq('state', 'doLater')
         .order('created_at', { ascending: false });  
   
       if (error) {
@@ -139,28 +139,7 @@ export const CreateIdea = async (idea) => {
     }
   };
 
-  export const fetchUserExecuted = async (userId) => {
-    try {
-      const { data, error } = await supabase
-        .from('ideas')
-        .select('*')
-        .eq('userId', userId)
-        .eq('state', 'executed')
-        .order('created_at', { ascending: false });  
-  
-      if (error) {
-        //console.log("Error fetching user ideas:", error);
-        return { success: false, msg: "Could not fetch ideas" };
-      }
-  
-      //console.log("Fetched ideas for user:", data);
-  
-      return { success: true, data: data };
-    } catch (error) {
-      //console.log("Unexpected error in fetchUserIdeas:", error);
-      return { success: false, msg: "An unexpected error occurred" };
-    }
-  };
+
 
   export const GetIdeaDetails = async (ideaId) => {
     try {

@@ -29,7 +29,6 @@ const Navbar = ({ fetchIdeas }) => {
             userId: user?.id,
             description: description.trim(),
             state: 'idea',
-            ranked: false,
         };
 
         const res = await CreateIdea(newIdea);
@@ -68,11 +67,11 @@ const Navbar = ({ fetchIdeas }) => {
     return (
         <>
             <View style={[styles.navbar, { backgroundColor:apptheme === 'light' ? theme.colors.light : '#2A2A2A' }]}>
-                {renderNavItem('onHold', 'pause')}
+                {renderNavItem('doLater', 'clock')}
                 {renderNavItem('home', 'idea')}
                 {renderNavItem('executions', 'rocket')}
             </View>
-            <TouchableOpacity onPress={() => setModalVisible(true)} style={[styles.addButton, {backgroundColor: apptheme ===  'light' ? '#A7ADC7' : theme.colors.Button2}]}>
+            <TouchableOpacity onPress={() => setModalVisible(true)} style={[styles.addButton, {backgroundColor: apptheme ===  'light' ? theme.colors.light : theme.colors.Button2}]}>
                 <Icon name="add" size={35} color={theme.colors.text} />
             </TouchableOpacity>
 
@@ -86,11 +85,11 @@ const Navbar = ({ fetchIdeas }) => {
                 <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
                     <View style={styles.modalContainer}>
                         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                            <View style={[styles.modalContent, { backgroundColor: apptheme === 'light' ? theme.colors.light : theme.colors.dark }]}>
+                            <View style={[styles.modalContent, { backgroundColor: apptheme === 'light' ? theme.colors.lightCard : theme.colors.dark }]}>
                                 <Text style={[styles.modalTitle, { color: apptheme === 'dark' ? theme.colors.light : theme.colors.dark }]}>Add New Idea</Text>
 
                                 <TextInput
-                                    style={[styles.input, { backgroundColor: apptheme === 'light' ? theme.colors.lightCard : theme.colors.darker, color: apptheme === 'dark' ? theme.colors.light : theme.colors.darker }]}
+                                    style={[styles.input, { backgroundColor: apptheme === 'light' ? theme.colors.light : theme.colors.darker, color: apptheme === 'dark' ? theme.colors.light : theme.colors.darker }]}
                                     placeholder="Title (required)"
                                     placeholderTextColor={apptheme === 'dark' ? theme.colors.light : theme.colors.dark}
                                     value={idea}
@@ -99,7 +98,7 @@ const Navbar = ({ fetchIdeas }) => {
                                 />
 
                                 <TextInput
-                                    style={[styles.input, styles.descriptionInput, { backgroundColor: apptheme === 'light' ? theme.colors.lightCard : theme.colors.darker, color: apptheme === 'dark' ? theme.colors.light : theme.colors.darker }]}
+                                    style={[styles.input, styles.descriptionInput, { backgroundColor: apptheme === 'light' ? theme.colors.light : theme.colors.darker, color: apptheme === 'dark' ? theme.colors.light : theme.colors.darker }]}
                                     placeholder="Description (optional)"
                                     placeholderTextColor={apptheme === 'dark' ? theme.colors.light : theme.colors.dark}
                                     value={description}
@@ -109,7 +108,7 @@ const Navbar = ({ fetchIdeas }) => {
 
                                 <View style={styles.modalActions}>
                                     <Pressable style={styles.button} onPress={() => setModalVisible(false)}>
-                                        <Text style={styles.buttonText}>Cancel</Text>
+                                        <Text style={[styles.buttonText,  {color: apptheme === 'light'? theme.colors.darker : theme.colors.light}]}>Cancel</Text>
                                     </Pressable>
 
                                     <Pressable style={styles.Createbutton} onPress={handleCreateIdea}>
@@ -198,7 +197,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
     },
     button: {
-        backgroundColor: 'silver',
+
         paddingVertical: 12,
         paddingHorizontal: 20,
         borderRadius: 8,
@@ -214,6 +213,6 @@ const styles = StyleSheet.create({
         marginBottom: hp(1),
     },
     buttonText: {
-        fontFamily: 'Satoshi-Regular',
+        fontFamily: 'Satoshi-Medium',
     }
 });

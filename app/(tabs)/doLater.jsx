@@ -1,19 +1,20 @@
 import { Animated, Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
-import React, { useCallback, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import ScreenWrapper from '../../components/ScreenWrapper'
 import theme from '../../constants/theme'
 import Navbar from '../../components/Navbar'
 import Header from '../../components/Header'
 import { useAuth } from '../../contexts/AuthContext'
 import { useFocusEffect, useRouter } from 'expo-router'
-import { fetchUserOnHolds, UpdateIdea } from '../../services/ideaService'
+import { fetchUserDoLaters, fetchUserOnHolds, UpdateIdea } from '../../services/ideaService'
 import { hp, wp } from '../../helpers/common'
 import { ScrollView } from 'react-native-gesture-handler'
 import Loading from '../../components/Loading'
 import { useTheme } from '../../contexts/ThemeContext'
+import { fetchIdeaTags } from '../../services/tagService'
 
 
-const onHold = () => {
+const DoLater = () => {
   const [ideas, setIdeas] = useState([]);
   const { user } = useAuth()
   const [selectedIdea, setSelectedIdea] = useState(null);
@@ -21,14 +22,14 @@ const onHold = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const { theme: apptheme } = useTheme();
-
+  const [tags, setTags] = useState({});
   const scrollY = useRef(new Animated.Value(0)).current;
 
-  const fetchOnHolds = async () => {
+  const fetchDoLaters = async () => {
     setLoading(true); // Start loading
     try {
       const userId = user?.id;
-      const result = await fetchUserOnHolds(userId);
+      const result = await fetchUserDoLaters(userId);
       if (result.success) {
         setIdeas(result.data);
       } else {
@@ -44,7 +45,7 @@ const onHold = () => {
 
   useFocusEffect(
     useCallback(() => {
-      fetchOnHolds();
+      fetchDoLaters();
     }, [])
   );
 
@@ -60,12 +61,29 @@ const onHold = () => {
     const res = await UpdateIdea(user.id, updatedFields, selectedIdea.id);
 
     if (res.success) {
-      await fetchOnHolds();
+      await fetchDoLaters();
       setLongPressModalVisible(false);
     } else {
       Alert.alert('Error', 'Failed to update idea state.');
     }
   };
+
+  const fetchTags = async (ideaId) => {
+    const result = await fetchIdeaTags(ideaId);
+    if (result.success) {
+      setTags((prevTags) => ({
+        ...prevTags,
+        [ideaId]: result.data, // Store tags by idea ID
+      }));
+    }
+  };
+
+  useEffect(() => {
+
+    ideas.forEach((idea) => {
+      fetchTags(idea.id);
+    });
+  }, [ideas]);
   return (
     <ScreenWrapper bg={apptheme === 'dark' ? theme.colors.darker : theme.colors.white}>
       <View style={styles.container}>
@@ -91,7 +109,7 @@ const onHold = () => {
           ]}
         >
           <Header
-            title="On Hold"
+            title="Do Later"
             showBackButton={false}
             showProfileIcon={true}
             mr={wp(4)}
@@ -122,9 +140,7 @@ const onHold = () => {
                         ideaId: idea.id,
                         ideaTitle: idea.title,
                         ideaDescription: idea.description,
-                        ideaRanked: idea.ranked,
                         ideaState: idea.state,
-                        ideaScore: idea.score,
                       },
                     })
                   }
@@ -142,6 +158,30 @@ const onHold = () => {
                     >
                       {idea.description}
                     </Text>
+                    <View style={styles.tagContainer}>
+                      {/* Render tags for the idea */}
+                      {tags[idea.id]?.map((tag, index) => (
+                        <Text key={index} style={{
+                          ...styles.tag,
+                          backgroundColor:
+                            tag.tags.color === 'red'
+                              ? theme.colors.red
+                              : tag.tags.color === 'blue'
+                                ? theme.colors.blue
+                                : tag.tags.color === 'green'
+                                  ? theme.colors.green
+                                  : tag.tags.color === 'yellow'
+                                    ? theme.colors.yellow
+                                    : apptheme === 'light'
+                                      ? theme.colors.light
+                                      : theme.colors.card,
+                          color:
+                            apptheme === 'light' ? theme.colors.darker : theme.colors.light
+                        }}>
+                          {tag.tags.name}
+                        </Text>
+                      ))}
+                    </View>
                   </View>
                 </TouchableOpacity>
               ))}
@@ -173,18 +213,18 @@ const onHold = () => {
               <View style={[styles.modalContent, { backgroundColor: apptheme === 'dark' ? theme.colors.darker : theme.colors.light }]}>
                 <Text style={[
                   styles.modalTitle,
-                  { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
+                  { color: theme.colors.text },
                 ]}>Change Idea State</Text>
                 <TouchableOpacity style={styles.button} onPress={() => handleIdeaStateChange('idea')}>
                   <Text style={[
                     styles.buttonText,
-                    { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
+                    { color: theme.colors.text },
                   ]}>Push to Ideas</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.button} onPress={() => handleIdeaStateChange('execution')}>
                   <Text style={[
                     styles.buttonText,
-                    { color: apptheme === 'light' ? theme.colors.text : theme.colors.lightText },
+                    { color: theme.colors.text },
                   ]}>Push to Executions</Text>
                 </TouchableOpacity>
               </View>
@@ -197,7 +237,7 @@ const onHold = () => {
   );
 };
 
-export default onHold;
+export default DoLater;
 
 const styles = StyleSheet.create({
   container: {
@@ -250,14 +290,14 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: 'silver',
-    paddingVertical: 10,
+    paddingVertical: 15,
     paddingHorizontal: 20,
     borderRadius: 8,
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: hp(1),
   },
   buttonText: {
-    fontFamily: 'Satoshi-Regular',
+    fontFamily: 'Satoshi-Medium',
     fontSize: 16,
 
   },
@@ -271,5 +311,19 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'gray',
     fontFamily: 'Satoshi-Bold'
+  },
+  tagContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: hp(1),
+  },
+  tag: {
+    backgroundColor: theme.colors.darker,
+    borderRadius: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    marginRight: 8,
+    fontSize: 12,
+    fontFamily: 'Satoshi-Regular',
   },
 });

@@ -7,12 +7,14 @@ import Header from '../components/Header';
 import Icon from '../assets/icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
 
 const searchPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [ideas, setIdeas] = useState([]);
   const router = useRouter();
   const { theme: apptheme } = useTheme();
+  const { user } = useAuth();
 
 
   // Fetch ideas based on search query
@@ -22,9 +24,10 @@ const searchPage = () => {
 
       try {
         const { data, error } = await supabase
-          .from('ideas') // Assuming 'posts' is your table with title & description
+          .from('ideas') 
           .select('*')
-          .ilike('title', `%${searchQuery}%`); // 'ilike' for case-insensitive search
+          .ilike('title', `%${searchQuery}%`)
+          .eq('userId', user.id); 
 
         if (error) {
           console.error(error);
